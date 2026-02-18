@@ -1,0 +1,1702 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MedSpecAPP</title>
+<style>
+  :root{
+    --bg:#0b0b10;
+    --fg:#e9eefb;
+    --cardBorder:rgba(255,255,255,0.12);
+    --cardBg:rgba(255,255,255,0.06);
+    --btnBorder:rgba(255,255,255,0.14);
+    --btnBg:rgba(255,255,255,0.06);
+    --muted:rgba(233,238,251,0.8);
+    --hr:rgba(255,255,255,0.12);
+    --good:#3ddc97;
+    --bad:#ff5b5b;
+    --accent:#ef233c;
+    --optBg:rgba(0,0,0,0.06);
+    --optBorder:rgba(255,255,255,0.10);
+    --fs:14px;
+  }
+  body.themeLight{
+    --bg:#f7f8fc;
+    --fg:#0b1220;
+    --cardBorder:rgba(15,23,42,0.12);
+    --cardBg:#fff;
+    --btnBorder:rgba(15,23,42,0.16);
+    --btnBg:rgba(15,23,42,0.04);
+    --muted:rgba(11,18,32,0.75);
+    --hr:rgba(15,23,42,0.12);
+    --optBg:rgba(15,23,42,0.03);
+    --optBorder:rgba(15,23,42,0.10);
+  }
+  body.fsS{ --fs:13px; }
+  body.fsM{ --fs:14px; }
+  body.fsL{ --fs:16px; }
+
+  html,body{height:100%}
+  body{margin:0;font-family:Arial,system-ui,sans-serif;background:var(--bg);color:var(--fg);font-size:var(--fs)}
+  a{color:inherit}
+  .wrap{max-width:980px;margin:0 auto;padding:16px}
+  header{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  .title{display:flex;flex-direction:column;gap:4px}
+  .title h1{margin:0;font-size:18px;letter-spacing:0.2px}
+  .title p{margin:0;font-size:12px;opacity:0.85;color:var(--muted)}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .btn{appearance:none;border:1px solid var(--btnBorder);background:var(--btnBg);color:inherit;border-radius:12px;padding:10px 12px;font-weight:700;cursor:pointer}
+  .btn.primary{background:var(--accent);border-color:transparent;color:#fff}
+  .btn.ghost{background:transparent}
+  .btn:disabled{opacity:0.45;cursor:not-allowed}
+  .card{border:1px solid var(--cardBorder);background:var(--cardBg);border-radius:18px;padding:14px}
+  .grid{display:grid;grid-template-columns:1fr;gap:12px}
+  @media(min-width:760px){.grid.two{grid-template-columns:1fr 1fr}}
+  label{font-size:12px;opacity:0.9;color:var(--muted)}
+  select,input[type="number"],input[type="text"]{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--btnBorder);background:var(--btnBg);color:inherit;font-weight:700}
+  .field{display:flex;flex-direction:column;gap:6px;min-width:210px;flex:1}
+  .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--btnBorder);background:var(--btnBg);padding:8px 10px;border-radius:999px;font-size:12px;font-weight:700}
+  .muted{opacity:0.9;font-size:12px;color:var(--muted)}
+  .bigQ{font-size:16px;line-height:1.35;margin:0 0 10px 0}
+  .opt{display:flex;gap:10px;align-items:flex-start;padding:10px 10px;border-radius:14px;border:1px solid var(--optBorder);background:var(--optBg);cursor:pointer}
+  .opt input{margin-top:2px;transform:scale(1.2)}
+  .opt.correct{border-color:rgba(0,255,170,0.35);background:rgba(0,255,170,0.08)}
+  .opt.wrong{border-color:rgba(255,60,60,0.35);background:rgba(255,60,60,0.08)}
+  .optText{flex:1}
+  .optLetter{width:22px;opacity:0.9}
+  .hr{height:1px;background:var(--hr);margin:12px 0}
+  .hidden{display:none}
+  .result{font-weight:800}
+  .ok{color:var(--good)}
+  .bad{color:var(--bad)}
+  .footerBar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+  .sideBtns{display:flex;gap:10px;flex-wrap:wrap}
+  .small{font-size:12px}
+  textarea{width:100%;min-height:140px;border-radius:14px;border:1px solid var(--btnBorder);background:var(--btnBg);color:inherit;padding:12px;font-family:Arial,system-ui,sans-serif;font-size:12px}
+  .chip{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--btnBorder);background:var(--btnBg);padding:8px 10px;border-radius:12px;font-size:12px;font-weight:800}
+  .wm{position:fixed;right:10px;bottom:10px;opacity:0.55;font-size:12px;pointer-events:none;user-select:none}
+  .wm span{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid var(--btnBorder);background:var(--btnBg);backdrop-filter:saturate(1.2) blur(6px)}
+  .progressWrap{display:flex;flex-direction:column;gap:8px}
+  .progressTop{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  .progressBar{height:10px;border-radius:999px;border:1px solid var(--btnBorder);background:var(--btnBg);overflow:hidden}
+  .progressFill{height:100%;width:0%;background:var(--accent);border-radius:999px;transition:width 180ms linear}
+  .modalBack{position:fixed;inset:0;background:rgba(0,0,0,0.55);display:none;align-items:flex-end;justify-content:center;padding:16px;z-index:50}
+  .modalBack.open{display:flex}
+  .modal{width:min(980px,100%);max-height:92vh;overflow:auto;border-radius:18px;border:1px solid var(--cardBorder);background:var(--cardBg);padding:14px}
+  .modalHead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--btnBorder);background:var(--btnBg);border-radius:14px;padding:10px 12px}
+  .toggle strong{font-size:12px}
+  .toggle input{transform:scale(1.2)}
+  .keyline{height:1px;background:var(--hr);margin:10px 0}
+  .list{margin:0;padding-left:18px;color:var(--muted);font-size:12px;line-height:1.4}
+  .badge{display:inline-flex;align-items:center;gap:6px;font-weight:900;font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--btnBorder);background:var(--btnBg)}
+</style>
+</head>
+<body class="themeDark fsM">
+<div class="wrap">
+  <header>
+    <div class="title">
+      <h1 id="appTitle">MedSpecAPP</h1>
+      <p id="appTag">Offline, semplice, diretto. E sorprendentemente utile.</p>
+    </div>
+    <div class="row">
+      <button class="btn" id="btnSettings" type="button" aria-label="Apri impostazioni">Impostazioni</button>
+      <button class="btn" id="btnTheme" type="button" aria-label="Cambia tema">Tema</button>
+      <button class="btn ghost" id="btnHome" type="button" aria-label="Torna alla home">Home</button>
+    </div>
+  </header>
+
+  <div class="hr"></div>
+
+  <main id="screenHome" class="grid">
+    <div class="card">
+      <div class="grid two">
+        <div class="field">
+          <label for="selMode">Modalità</label>
+          <select id="selMode">
+            <option value="quiz">Quiz</option>
+            <option value="mem">Memoria (domanda + risposta)</option>
+            <option value="exam">Simulazione esame (15 domande, obiettivo 9)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="selCat">Materia</label>
+          <select id="selCat">
+            <option value="ALL">Tutte</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="selNum">Numero domande</label>
+          <select id="selNum">
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20" selected>20</option>
+            <option value="30">30</option>
+            <option value="all">Tutte</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="selShuffle">Ordine</label>
+          <select id="selShuffle">
+            <option value="yes" selected>Shuffle</option>
+            <option value="no">In ordine</option>
+          </select>
+        </div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary" id="btnStart" type="button">Avvia</button>
+        <button class="btn" id="btnReviewWrong" type="button">Ripasso errori</button>
+        <button class="btn" id="btnFocus" type="button">Focus</button>
+        <span class="muted" id="homeInfo"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <div class="pill" id="pillStats">0 risposte</div>
+        <div class="pill" id="pillWrong">0 errori salvati</div>
+        <div class="pill" id="pillStreak">Streak 0</div>
+      </div>
+      <div class="hr"></div>
+
+      <div class="grid two">
+        <div class="card" style="padding:12px">
+          <div class="small" style="font-weight:900;margin-bottom:6px">Tweaks v 1.4.7</div>
+          <ul class="list" id="tweakList"></ul>
+          <div class="keyline"></div>
+          <div class="small" style="font-weight:900;margin-bottom:6px">Idee (future, se hai tempo e forza di volontà)</div>
+          <ul class="list" id="ideaList"></ul>
+        </div>
+
+        <div class="card" style="padding:12px">
+          <div class="small" style="font-weight:900;margin-bottom:6px">Backup rapido</div>
+          <div class="muted">Esporta o importa stato, impostazioni e banca. Copia e incolla.</div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn" id="btnExport" type="button">Esporta</button>
+            <button class="btn" id="btnImport" type="button">Importa</button>
+            <button class="btn" id="btnReset" type="button">Reset stats</button>
+          </div>
+          <div style="margin-top:10px">
+            <textarea id="ioBox" placeholder="Qui appare l'export. Per import: incolla e premi Importa."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <main id="screenPlay" class="grid hidden">
+    <div class="card">
+      <div class="progressWrap" id="progressWrap">
+        <div class="progressTop">
+          <div class="row">
+            <div class="pill" id="pillProg">0 di 0</div>
+            <div class="pill" id="pillPct">0%</div>
+            <div class="pill" id="pillCat">Materia</div>
+            <div class="pill" id="pillMode">Modalità</div>
+            <div class="pill hidden" id="pillTime">00:00</div>
+          </div>
+          <div class="sideBtns">
+            <button class="btn" id="btnToggleKnown" type="button">Segna: So</button>
+            <button class="btn" id="btnFlagWrong" type="button">Segna: Errore</button>
+          </div>
+        </div>
+        <div class="progressBar" aria-label="Barra di avanzamento">
+          <div class="progressFill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <p class="bigQ" id="qStem"></p>
+
+      <div id="quizArea" class="grid"></div>
+
+      <div id="memArea" class="card hidden" style="padding:12px">
+        <div class="small" style="font-weight:900;margin-bottom:6px">Risposta corretta</div>
+        <div id="memAnswer" style="font-size:15px;line-height:1.35"></div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="footerBar">
+        <div class="row">
+          <span class="result" id="resText"></span>
+          <span class="muted" id="resDetail"></span>
+        </div>
+        <div class="sideBtns">
+          <button class="btn" id="btnPrev" type="button">Indietro</button>
+          <button class="btn" id="btnShowSol" type="button">Mostra soluzione</button>
+          <button class="btn primary" id="btnSubmit" type="button">Conferma</button>
+          <button class="btn primary" id="btnNext" type="button">Avanti</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <main id="screenSummary" class="grid hidden">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="badge" id="sumBadge">Sessione finita</div>
+          <div style="margin-top:10px;font-weight:900;font-size:16px" id="sumTitle">Riepilogo</div>
+          <div class="muted" style="margin-top:6px" id="sumSub"></div>
+        </div>
+        <div class="row">
+          <button class="btn" id="btnSumHome" type="button">Home</button>
+          <button class="btn primary" id="btnSumWrong" type="button">Ripasso errori</button>
+        </div>
+      </div>
+      <div class="hr"></div>
+      <div class="grid two">
+        <div class="card" style="padding:12px">
+          <div class="small" style="font-weight:900;margin-bottom:6px">Risultati</div>
+          <div id="sumStats" style="line-height:1.45"></div>
+        </div>
+        <div class="card" style="padding:12px">
+          <div class="small" style="font-weight:900;margin-bottom:6px">Note</div>
+          <div class="muted" id="sumNotes"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modalBack" id="settingsBack" aria-label="Impostazioni">
+  <div class="modal">
+    <div class="modalHead">
+      <div>
+        <div style="font-weight:900;font-size:16px">Impostazioni</div>
+        <div class="muted">MedSpecAPP v 1.4.7</div>
+      </div>
+      <div class="row">
+        <button class="btn" id="btnCloseSettings" type="button">Chiudi</button>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="grid two">
+      <div class="card" style="padding:12px">
+        <div class="small" style="font-weight:900;margin-bottom:8px">Aspetto</div>
+        <div class="toggle">
+          <strong>Tema light</strong>
+          <input id="setThemeLight" type="checkbox" aria-label="Tema light">
+        </div>
+        <div style="height:10px"></div>
+        <div class="field" style="min-width:0">
+          <label for="setFontSize">Dimensione testo</label>
+          <select id="setFontSize">
+            <option value="s">Piccolo</option>
+            <option value="m">Medio</option>
+            <option value="l">Grande</option>
+          </select>
+        </div>
+        <div style="height:10px"></div>
+        <div class="toggle">
+          <strong>Modalità focus (fullscreen)</strong>
+          <input id="setFocus" type="checkbox" aria-label="Modalità focus">
+        </div>
+      </div>
+
+      <div class="card" style="padding:12px">
+        <div class="small" style="font-weight:900;margin-bottom:8px">Quiz</div>
+        <div class="field" style="min-width:0">
+          <label for="setDefaultNum">Numero domande default</label>
+          <select id="setDefaultNum">
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="all">Tutte</option>
+          </select>
+        </div>
+        <div style="height:10px"></div>
+        <div class="toggle">
+          <strong>Shuffle</strong>
+          <input id="setShuffle" type="checkbox" aria-label="Shuffle">
+        </div>
+        <div style="height:10px"></div>
+        <div class="toggle">
+          <strong>Mostra soluzione subito</strong>
+          <input id="setShowSol" type="checkbox" aria-label="Mostra soluzione subito">
+        </div>
+        <div style="height:10px"></div>
+        <div class="toggle">
+          <strong>Auto avanti dopo risposta</strong>
+          <input id="setAutoNext" type="checkbox" aria-label="Auto avanti dopo risposta">
+        </div>
+      </div>
+    </div>
+
+    <div class="grid two" style="margin-top:12px">
+      <div class="card" style="padding:12px">
+        <div class="small" style="font-weight:900;margin-bottom:8px">Timer</div>
+        <div class="field" style="min-width:0">
+          <label for="setTimerMode">Modalità timer</label>
+          <select id="setTimerMode">
+            <option value="off">Off</option>
+            <option value="up">Cronometro</option>
+            <option value="down">Countdown</option>
+          </select>
+        </div>
+        <div style="height:10px"></div>
+        <div class="field" style="min-width:0">
+          <label for="setTimerMin">Countdown (minuti)</label>
+          <input id="setTimerMin" type="number" min="1" max="240" step="1">
+        </div>
+        <div style="height:10px"></div>
+        <div class="toggle">
+          <strong>Barra avanzamento</strong>
+          <input id="setProgress" type="checkbox" aria-label="Barra avanzamento">
+        </div>
+      </div>
+
+      <div class="card" style="padding:12px">
+        <div class="small" style="font-weight:900;margin-bottom:8px">Gestione dati</div>
+        <div class="row">
+          <button class="btn" id="btnExport2" type="button">Esporta JSON</button>
+          <button class="btn" id="btnImport2" type="button">Importa JSON</button>
+          <button class="btn" id="btnReset2" type="button">Reset stats</button>
+        </div>
+        <div style="margin-top:10px">
+          <textarea id="ioBox2" placeholder="Export o import qui."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="padding:12px;margin-top:12px">
+      <div class="small" style="font-weight:900;margin-bottom:6px">Info</div>
+      <div class="muted" id="infoText"></div>
+      <div class="keyline"></div>
+      <div class="small" style="font-weight:900;margin-bottom:6px">Report duplicati</div>
+      <div class="muted" id="dedupeText"></div>
+    </div>
+  </div>
+</div>
+
+<div class="wm" id="wm"><span>Fulvio Antonio Presutto • MedSpecAPP v 1.4.7</span></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var APP_NAME = "MedSpecAPP";
+  var APP_VERSION = "v 1.4.7";
+  var WATERMARK = "Fulvio Antonio Presutto";
+
+  var TWEAKS = [
+    "Timer sessione (cronometro o countdown)",
+    "Barra avanzamento con percentuale",
+    "Dedupe banca domande all'avvio con report",
+    "Pagina Impostazioni completa",
+    "Fix refusi su tachiaritmia",
+    "Watermark persistente"
+  ];
+
+  var IDEAS = [
+    "Spaced repetition semplice (Leitner base)",
+    "Tag difficoltà (facile, media, dura) assegnabili",
+    "Ricerca per testo con filtro materia",
+    "Simulazione esame con report e soglia pass",
+    "Backup automatico con snapshot e ripristino",
+    "Modalità focus: nasconde extra e fullscreen"
+  ];
+
+  function safeJsonParse(s){
+    try{ return JSON.parse(s); }catch(e){ return null; }
+  }
+  function lsGet(k){
+    try{ return localStorage.getItem(k); }catch(e){ return null; }
+  }
+  function lsSet(k,v){
+    try{ localStorage.setItem(k,v); return true; }catch(e){ return false; }
+  }
+  function uniq(arr){
+    var out = [];
+    var seen = {};
+    for(var i=0;i<arr.length;i++){
+      var x = arr[i];
+      if(seen[x]){ continue; }
+      seen[x] = true;
+      out.push(x);
+    }
+    return out;
+  }
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i-=1){
+      var j = Math.floor(Math.random()*(i+1));
+      var t = a[i];
+      a[i] = a[j];
+      a[j] = t;
+    }
+    return a;
+  }
+  function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
+  function toLetter(idx){ return String.fromCharCode(65 + idx); }
+  function pad2(n){ return (n<10 ? "0" : "") + n; }
+  function formatMMSS(sec){
+    sec = Math.max(0, Math.floor(sec));
+    var m = Math.floor(sec/60);
+    var s = sec % 60;
+    return pad2(m) + ":" + pad2(s);
+  }
+
+  function normalizeText(s){
+    s = (s || "").toLowerCase();
+    s = s.replace(/['’]/g,"'");
+    s = s.replace(/[^a-z0-9àèéìòùáíóúäëïöüçñ\s]/g," ");
+    s = s.replace(/\s+/g," ").trim();
+    return s;
+  }
+  function fixTachy(s){
+    if(!s){ return s; }
+    return s
+      .replace(/attacchiaritmia/gi,"tachiaritmia")
+      .replace(/attacchiaritmie/gi,"tachiaritmie")
+      .replace(/attacchi aritmia/gi,"tachiaritmia");
+  }
+
+  var RAW_BANK = [];
+  function add(cat, id, stem, options, correctIdxs){
+    RAW_BANK.push({cat:cat, id:id, stem:stem, options:options, correct:correctIdxs});
+  }
+
+  add("Neurologia","NEURO-01","Indichi la triade dei sintomi che caratterizza la malattia di Parkinson.",["tremore di riposo, bradicinesia, rigidità plastica","tremore di riposo, bradicinesia, rigidità spastica","tremore d'azione, bradicinesia, rigidità plastica","tremore d'azione, bradicinesia, rigidità spastica"],[0]);
+  add("Neurologia","NEURO-02","Indichi l'esame di prima scelta per la diagnosi di sclerosi multipla.",["TC encefalo senza mezzo di contrasto","TC encefalo con mezzo di contrasto","RMN encefalo con mezzo di contrasto","RMN encefalo senza mezzo di contrasto"],[2]);
+  add("Neurologia","NEURO-03","Indichi il trattamento di prima scelta nella terapia dell'attacco della sclerosi multipla.",["corticosteroidi per os","corticosteroidi per ev","interferone beta","plasmaferesi"],[1]);
+  add("Neurologia","NEURO-04","Indichi la definizione corretta fra le seguenti. La SLA è:",["una malattia degenerativa del primo e secondo motoneurone","una malattia degenerativa del primo motoneurone","una malattia degenerativa del secondo motoneurone","una malattia della giunzione neuromuscolare"],[0]);
+  add("Neurologia","NEURO-05","Indichi la triade di sintomi che caratterizza la miastenia gravis.",["tremore, rigidità, bradicinesia","atassia, nistagmo, disartria","debolezza muscolare, affaticabilità, tremore","debolezza muscolare generalizzata, disfagia, dispnea"],[3]);
+  add("Neurologia","NEURO-06","Indichi la triade dei sintomi che caratterizza una sindrome extrapiramidale.",["disturbi del movimento, tremore, rigidità","riduzione della forza, del trofismo muscolare, rigidità muscolare","riduzione della forza muscolare, deficit sensitivi, rigidità","atassia, tremore, rigidità"],[0]);
+  add("Neurologia","NEURO-07","Indichi le strutture che rappresentano le vie centrali del sistema di moto.",["primo motoneurone","secondo motoneurone","sistema extrapiramidale","tutte le precedenti"],[3]);
+  add("Neurologia","NEURO-08","Indichi quale fascia di fibre degenera nella malattia di Parkinson.",["fascia piramidale","fascia cordonale posteriore","fascio nigrostriatale","fascio spinotalamico"],[2]);
+  add("Neurologia","NEURO-09","Indichi le caratteristiche principali del grande male idiopatico.",["convulsione tonico-clonica non associata a perdita di coscienza","convulsione tonico-clonica associata a perdita di coscienza","crisi di assenza associata a clonie","crisi atonica con perdita di coscienza"],[1]);
+  add("Neurologia","NEURO-10","Indichi le caratteristiche cliniche della sindrome cerebellare.",["atassia, anestesia, debolezza muscolare","atassia, disartria, nistagmo","debolezza muscolare, tremore, rigidità","instabilità posturale, bradicinesia"],[1]);
+  add("Neurologia","NEURO-11","Indichi tra i seguenti il farmaco utilizzato per la terapia della miastenia gravis.",["piridostigmina","corticosteroidi","immunoglobuline EV","tutti i precedenti"],[3]);
+  add("Neurologia","NEURO-12","Indichi i segni clinici che caratterizzano una sindrome del primo motoneurone.",["riduzione della forza e del trofismo muscolare, aumento del tono muscolare","riduzione della forza e del trofismo muscolare, riduzione del tono muscolare","riduzione della forza e del trofismo muscolare, movimenti anormali","riduzione della forza e del trofismo muscolare, atassia della marcia"],[0]);
+  add("Neurologia","NEURO-13","Indichi la sede dell'area sensitiva primaria.",["lobo frontale","lobo parietale","lobo occipitale","lobo temporale"],[1]);
+  add("Neurologia","NEURO-14","Indichi tra le seguenti la definizione corretta. La sclerosi multipla è:",["una malattia neurodegenerativa","una malattia ereditaria","una malattia infiammatoria demielinizzante","una malattia del sistema nervoso periferico"],[2]);
+  add("Neurologia","NEURO-15","Indichi il decorso clinico della sclerosi laterale amiotrofica.",["cronico, lentamente progressivo","cronico, rapidamente evolutivo","acuto","subacuto"],[1]);
+  add("Neurologia","NEURO-16","Malattia di Alzheimer:",["rappresenta la prima causa di demenza neurodegenerativa","si caratterizza dal punto di vista microscopico per la presenza di placche amiloidi","si associa alla presenza di fattori di rischio cardiovascolari","tutte le precedenti"],[3]);
+
+  add("Oncologia e cure palliative","ONCO-01","Quando un tumore può dirsi maligno?",["se ha la capacità di metastatizzare altri organi","se ha una crescita non infiltrativa solo locale","se determina sintomi","se è difficile da diagnosticare"],[0]);
+  add("Oncologia e cure palliative","ONCO-02","Quando una malattia può dirsi metastatica?",["esclusivamente nella fase terminale della malattia","se localmente avanzata ma ancora radicalizzabile chirurgicamente","se presenta metastasi linfonodali asportate chirurgicamente","se è estesa a più organi non radicalizzabile chirurgicamente"],[3]);
+  add("Oncologia e cure palliative","ONCO-03","Cosa si intende per stadiazione dei tumori?",["la definizione dell'estensione locale e a distanza della malattia","la sequenza dei trattamenti","la presenza di sintomi da tumore","un inquadramento biologico della malattia"],[0]);
+  add("Oncologia e cure palliative","ONCO-04","A quale stadio corrisponde in genere una malattia avanzata?",["0","primo/secondo","terzo","quarto"],[3]);
+  add("Oncologia e cure palliative","ONCO-05","Cosa si intende per fattore biologico predittivo?",["la capacità di rispondere a un determinato trattamento","la determinazione dell'attesa di vita del paziente","la stadiazione della malattia","il rischio di tossicità da trattamento"],[0]);
+  add("Oncologia e cure palliative","ONCO-06","Lo screening può essere inquadrato:",["nella cura della malattia metastatica","nella prevenzione secondaria","nella prevenzione primaria","nessuna delle precedenti"],[1]);
+  add("Oncologia e cure palliative","ONCO-07","A quale stadio corrisponde in genere una malattia localizzata?",["0","primo/secondo","terzo","quarto"],[1]);
+  add("Oncologia e cure palliative","ONCO-08","In Italia, la copertura dei bisogni di cure palliative (studio SDA Bocconi 2019) è intorno a:",["25%","50%","75%","100%"],[0]);
+  add("Oncologia e cure palliative","ONCO-09","Tra le scale di misurazione del sintomo dolore, la più diffusa è:",["Pain Management Index (PMI) di Cleeland","Numerical Rating Scale (NRS) da 0 a 10","Brief Pain Inventory (BPI)","Verbal Rating Scale (VRS)"],[1]);
+  add("Oncologia e cure palliative","ONCO-10","Il sintomo più frequente come causa di sedazione palliativa è:",["dolore","delirio","dispnea","vomito"],[1]);
+  add("Oncologia e cure palliative","ONCO-11","L'obiettivo della sedazione palliativa è:",["il sollievo da una sofferenza intollerabile per un sintomo refrattario","la morte del paziente","il controllo del dolore procedurale","il prolungamento della sopravvivenza"],[0]);
+  add("Oncologia e cure palliative","ONCO-12","Le visite ambulatoriali di cure palliative fanno parte di:",["non esistono pazienti di cure palliative che possono andare in ambulatorio","cure palliative precoci","cure palliative di fine vita","le cure palliative precoci si effettuano solo in hospice"],[1]);
+  add("Oncologia e cure palliative","ONCO-13","Secondo la legge 38 del 2010, la misurazione del dolore va effettuata:",["solo in hospice","solo nelle chirurgie","in tutti i reparti","a discrezione dell'infermiere"],[2]);
+  add("Oncologia e cure palliative","ONCO-14","Vi è evidenza che, rispetto agli oppioidi orali, i cerotti transdermici di fentanyl a dosi equipotenti diano:",["più morti per tossicità","più effetti collaterali gravi","meno stipsi","meno risultato antalgico"],[2]);
+  add("Oncologia e cure palliative","ONCO-15","Nei pazienti con demenza, la scala di rilevazione del dolore più usata è:",["PAINAD","ESAS","IPOS","BPI"],[0]);
+
+  add("Oncologia e cure palliative","ONCO-16","Quale fra i seguenti è un possibile evento avverso della chemioterapia con antracicline?",["ototossicità","cardiotossicità","neuropatia sensoriale periferica","ipofisite"],[1]);
+  add("Oncologia e cure palliative","ONCO-17","Quale fra i seguenti farmaci può essere indicato nella gestione degli eventi avversi da immunoterapia?",["prednisone","amoxicillina","sali di platino","interleuchina ad alte dosi"],[0]);
+  add("Oncologia e cure palliative","ONCO-18","L'acronimo CTCAE fa riferimento a:",["un nuovo ADC per la cura del melanoma","una terminologia per classificare la severità degli effetti collaterali","un inibitore delle cicline chinasi dipendente","la fase del ciclo cellulare che precede la mitosi"],[1]);
+  add("Oncologia e cure palliative","ONCO-19","Quale fra i seguenti può essere annoverata fra le target therapy in oncologia?",["doxorubicina","nab-paclitaxel","melphalan","trastuzumab"],[3]);
+  add("Oncologia e cure palliative","ONCO-20","Un evento avverso di grado 3:",["è un evento lieve","è un evento moderato","è un evento severo","impone sempre la riduzione della dose della chemioterapia"],[2]);
+  add("Oncologia e cure palliative","ONCO-21","Il tumore della mammella triplo negativo:",["non presenta espressione dei recettori per estrogeni, progesterone e HER2","ha generalmente una prognosi ottimale","viene solitamente trattato solo con radioterapia","è un tumore sempre ereditario"],[0]);
+  add("Oncologia e cure palliative","ONCO-22","Dopo l'intervento chirurgico radicale per un carcinoma della mammella:",["bisogna eseguire il test BRCA1/2 a tutti i familiari di primo grado","può essere considerato un trattamento adiuvante in base a stadio e caratteristiche","è importante una dieta ipercalorica per aumentare di peso","è sempre indicata la valutazione radioterapica"],[1]);
+  add("Oncologia e cure palliative","ONCO-23","I tumori del colon che insorgono a livello del colon destro:",["rispondono molto bene alla chemioterapia neoadiuvante","metastatizzano più spesso in encefalo","hanno una prognosi peggiore rispetto al colon sinistro","vengono trattati sempre con immunoterapia"],[2]);
+  add("Oncologia e cure palliative","ONCO-24","I tumori del colon e del retto:",["vengono trattati generalmente nello stesso modo","richiedono un approccio multidisciplinare","sono molto sensibili ai trattamenti combinati chemo-radioterapici","se operati recidivano entro 14 mesi"],[1]);
+  add("Oncologia e cure palliative","ONCO-25","L'adenocarcinoma del pancreas:",["non può essere mai operato","può trarre beneficio da un trattamento neoadiuvante","anche in fase precoce va trattato sempre con polichemioterapia","è facilmente diagnosticabile fin dalle fasi di esordio"],[1]);
+  add("Oncologia e cure palliative","ONCO-26","Si intende per incidenza:",["tasso di nuovi casi diagnosticati in una popolazione in un dato periodo","tasso di nuovi morti per una data malattia in un dato periodo","numero di soggetti affetti in una popolazione in un dato periodo","misura di associazione fra frequenza di malattia e fattore di rischio"],[0]);
+  add("Oncologia e cure palliative","ONCO-27","Il gene più frequentemente mutato nei tumori del polmone non a piccole cellule in soggetti non fumatori è:",["VEGF","ALK","BRAF","EGFR"],[3]);
+  add("Oncologia e cure palliative","ONCO-28","Le mutazioni germinali dei geni BRCA:",["aumentano il rischio di tumore del colon","aumentano il rischio di tumore del polmone","aumentano il rischio di tumore della mammella","aumentano il rischio di tumori ematologici"],[2]);
+  add("Oncologia e cure palliative","ONCO-29","Lo screening mammografico:",["è prevenzione primaria","è prevenzione secondaria","è prevenzione terziaria","nessuna delle precedenti"],[1]);
+  add("Oncologia e cure palliative","ONCO-30","L'asbesto è:",["un cancerogeno iniziatore","un cancerogeno promotore","un cancerogeno completo (iniziatore e promotore)","nessuna delle precedenti"],[2]);
+
+  add("Cardiovascolare","CARD-01","Quali sono le caratteristiche che rendono verosimile un errore nel posizionamento degli elettrodi periferici?",["Un complesso QRS positivo in DII","Un complesso QRS positivo in aVR","Una frequenza cardiaca superiore a 100 bpm","Un complesso QRS più largo di 0,12 secondi"],[1]);
+  add("Cardiovascolare","CARD-02","La fibrillazione atriale è:",["una tachiaritmia sopraventricolare","una tachiaritmia ventricolare","il normale ritmo cardiaco","un BAV"],[0]);
+  add("Cardiovascolare","CARD-03","Nella fibrillazione atriale:",["sono presenti onde P e la distanza RR è in genere variabile da battito a battito","la frequenza cardiaca è sempre superiore a 80 bpm","non vi è mai un sottoslivellamento del tratto ST","non sono presenti onde P e la distanza RR è in genere variabile da battito a battito"],[3]);
+  add("Cardiovascolare","CARD-04","La presenza di un'ischemia cardiaca può influenzare:",["il complesso QRS","il tratto ST","l'onda T","tutte le precedenti"],[3]);
+  add("Cardiovascolare","CARD-05","I sintomi della stenosi aortica sono:",["angina","sincope","dispnea","tutte le precedenti"],[3]);
+  add("Cardiovascolare","CARD-06","La definizione di angina instabile prevede la presenza di:",["dolore toracico, con o senza alterazioni ECG; troponina o enzimi di necrosi normali","dolore toracico, ECG normale, enzimi di necrosi elevati","dolore toracico, sottoslivellamento ST, enzimi di necrosi elevati","nessuna delle precedenti"],[0]);
+  add("Cardiovascolare","CARD-07","La diagnosi di infarto miocardico acuto deve essere posta in caso di elevazione degli enzimi cardiaci in associazione ad almeno uno di questi criteri:",["alterazioni elettrocardiografiche tipiche di ischemia","presenza di angor","morte improvvisa","tutte le precedenti"],[3]);
+  add("Cardiovascolare","CARD-08","Le extrasistoli sono:",["battiti anticipati","battiti mancanti","battiti provocati dal pacemaker","tutte le precedenti"],[0]);
+  add("Cardiovascolare","CARD-09","La tachicardia ventricolare è:",["un'urgenza cardiologica","un'aritmia lenta","un ritmo normale nello scompenso cardiaco","tutte le precedenti"],[0]);
+  add("Cardiovascolare","CARD-10","Sulla fibrillazione ventricolare, quale affermazione è corretta?",["può essere trattata in prima linea con antiaritmici","se non trattata subito con defibrillatore porta a morte in pochi minuti","non è pericolosa","è caratterizzata da complessi QRS stretti e regolari"],[1]);
+  add("Cardiovascolare","CARD-11","La sintomatologia tipica dell'angina stabile è:",["dura più di 20 minuti ed è scatenata solo da stress psichici","dura meno di 20 minuti e si risolve con nitriti o con il riposo","è migrante","persiste per almeno un'ora e si ha anche a riposo"],[1]);
+  add("Cardiovascolare","CARD-12","Si ha blocco atrioventricolare di primo grado quando:",["una parte degli impulsi dal nodo senoatriale non raggiunge i ventricoli","vi è allungamento costante del tratto PQ e ogni onda P è seguita da QRS","vi è un blocco di tipo 1 (Wenckebach) o di tipo 2 (Moritz)","vi è concordanza tra onda P e complesso QRS"],[1]);
+  add("Cardiovascolare","CARD-13","Per tachicardia sinusale e bradicardia sinusale si intendono rispettivamente:",["FC maggiore di 100 bpm e minore di 80 bpm","FC maggiore di 90 bpm e minore di 80 bpm","FC maggiore di 100 bpm e minore di 60 bpm","FC maggiore di 90 bpm e minore di 60 bpm"],[2]);
+  add("Cardiovascolare","CARD-14","Fanno parte delle sindromi coronariche acute:",["IMA","angina stabile","angina instabile","tutte le precedenti"],[0,2]);
+  add("Cardiovascolare","CARD-15","Paziente con dolore toracico retrosternale costrittivo o oppressivo irradiato a spalla e braccio sinistro. Quale esame eseguire immediatamente?",["RX torace","ECG","ecografia addominale","emogasanalisi"],[1]);
+  add("Cardiovascolare","CARD-16","Paziente con scompenso cardiaco acuto:",["la disnea è sintomo frequente","la terapia diuretica endovenosa è utile per alleviare i sintomi","è importante monitorare la diuresi","tutte le precedenti"],[3]);
+  add("Cardiovascolare","CARD-17","La cardiopatia ischemica acuta:",["è una patologia tempo dipendente","l'aterosclerosi è una causa comune","i fattori di rischio includono età, obesità, diabete e ipertensione","tutte le precedenti"],[3]);
+  add("Cardiovascolare","CARD-18","La fibrillazione atriale si associa a rischio aumentato di:",["ictus ischemico","scompenso cardiaco","demenza","tutte le precedenti"],[3]);
+  add("Cardiovascolare","CARD-19","Quale delle seguenti affermazioni è falsa?",["L'edema polmonare è una manifestazione dello scompenso cardiaco sinistro","I diuretici dell'ansa eliminano acqua e sodio riducendo la congestione","I beta bloccanti non sono indicati nella terapia","Lo scompenso cardiaco è una sindrome con sintomi e segni per alterazione strutturale o funzionale del cuore"],[2]);
+  add("Cardiovascolare","CARD-20","La fibrillazione atriale:",["può associarsi a rischio cardioembolico","è sempre dovuta a scompenso cardiaco","è caratterizzata da onde P giganti","è sinonimo di arresto cardiaco"],[0]);
+  add("Cardiovascolare","CARD-21","L'ECG:",["non serve alla diagnosi di infarto miocardico","può mostrare segni di ischemia miocardica","non identifica la ripolarizzazione dei ventricoli","non viene eseguito sul territorio dal 118"],[1]);
+  add("Cardiovascolare","CARD-22","Quale affermazione è vera?",["ischemia e infarto sono la stessa cosa","l'angina pectoris si modifica con gli atti respiratori","l'angina pectoris può manifestarsi durante uno sforzo","l'ischemia rappresenta la fase finale dell'infarto miocardico"],[2]);
+  add("Cardiovascolare","CARD-23","Nell'infarto miocardico con sopraslivellamento del tratto ST:",["il monitoraggio ECG può iniziare dopo la fase acuta","l'angioplastica coronarica primaria è la terapia raccomandata","la trombolisi non è mai indicata in fase acuta","l'angioplastica coronarica primaria va eseguita entro 24 ore"],[1]);
+  add("Cardiovascolare","CARD-24","Nell'infarto miocardico senza sopraslivellamento del tratto ST:",["non è indicato lo studio coronarografico","è trattato mediante trombolisi sistemica","è indicato studio coronarografico urgente entro 2 ore in caso di instabilità o persistenza dolore","la troponina plasmatica non è aumentata"],[2]);
+  add("Cardiovascolare","CARD-25","Nell'arresto cardiaco, quale affermazione è falsa?",["più passa il tempo più si riduce la possibilità di ROSC e aumenta il danno anossico cerebrale","è fondamentale iniziare la RCP e solo al ritorno dei segni vitali si allertano i soccorsi","è fondamentale allertare i soccorsi e iniziare la RCP","nella maggioranza dei casi è dovuto a TV o FV"],[1]);
+  add("Cardiovascolare","CARD-26","Riguardo alla stenosi valvolare aortica:",["può manifestarsi con dispnea, sincope e angina","quando compaiono i sintomi vi è indicazione alla sostituzione valvolare","esiste una tecnica di sostituzione valvolare transcatetere","tutte le precedenti sono vere"],[3]);
+  add("Cardiovascolare","CARD-27","L'insufficienza valvolare mitralica:",["si differenzia in forma primaria (organica) e secondaria (funzionale)","è patologia rara nel mondo occidentale","non è dovuta a endocardite infettiva","non può essere corretta con plastica chirurgica"],[0]);
+  add("Cardiovascolare","CARD-28","La malattia reumatica:",["può manifestarsi con danni valvolari cardiaci a distanza di anni","difficilmente interessa la valvola mitrale","è secondaria a infezione virale","è la prima causa di valvulopatia nel mondo occidentale"],[0]);
+  add("Cardiovascolare","CARD-29","Riguardo all'embolia polmonare, quale affermazione è falsa?",["la terapia estroprogestinica rappresenta un fattore di rischio","rappresenta un problema nei pazienti ospedalizzati","la diagnosi gold standard è l'angioTC del circolo polmonare","è secondaria a trombosi del distretto arterioso periferico"],[3]);
+  add("Cardiovascolare","CARD-30","La pericardite acuta:",["entra in diagnosi differenziale con infarto miocardico acuto","va trattata sempre con corticosteroidi","non è associata ad alterazioni dell'ECG","viene diagnosticata con RX del torace"],[0]);
+  add("Cardiovascolare","CARD-31","L'endocardite infettiva:",["viene trattata con antibiotici per almeno 10 giorni","va sempre trattata con intervento cardiochirurgico","può avere complicanze neurologiche e spleniche","è meno grave se su valvola protesica"],[2]);
+  add("Cardiovascolare","CARD-32","La terapia antibiotica nell'endocardite infettiva:",["prevede raramente l'associazione di due molecole","è differente per tessuti nativi e strutture protesiche","va iniziata prima della raccolta delle emocolture","va preferibilmente somministrata per os"],[1]);
+  add("Cardiovascolare","CARD-33","La cardiomiopatia ipertrofica:",["può manifestarsi con aritmie ventricolari","può interessare più individui della stessa famiglia","può manifestarsi con scompenso cardiaco","tutte le precedenti sono vere"],[3]);
+
+  add("Respiratorio","RESP-01","La superficie degli alveoli è approssimativamente pari a:",["quella di un campo da tennis","quella di un campo da calcio","quella di un campo da ping pong","quella di un campo da pallavolo"],[0]);
+  add("Respiratorio","RESP-02","Quale parola è fondamentale per comprendere fisiologia e fisiopatologia dell'apparato respiratorio?",["elasticità","deformabilità","plasticità","potenza"],[0]);
+  add("Respiratorio","RESP-03","La diffusione dei gas è:",["direttamente proporzionale al gradiente di pressione","direttamente proporzionale al gradiente di pressione e alla superficie di diffusione","inversamente proporzionale al gradiente di pressione","inversamente proporzionale al gradiente di pressione e direttamente proporzionale al peso molecolare"],[1]);
+  add("Respiratorio","RESP-04","La spirometria misura:",["i volumi statici e dinamici mobilizzati dagli atti respiratori","il volume residuo","la capacità polmonare totale","la diffusione dei gas"],[0]);
+  add("Respiratorio","RESP-05","Il test alla metacolina si usa per:",["diagnosi di polmonite","controllo della diffusione dei gas","diagnosi di BNA","diagnosi di asma"],[3]);
+  add("Respiratorio","RESP-06","L'emogasanalisi arteriosa misura:",["PaO2 e PaCO2 nel sangue venoso","PaO2 e PaCO2 nel sangue arterioso","la pressione dell'azoto nel sangue","la capacità polmonare inspiratoria"],[1]);
+  add("Respiratorio","RESP-07","La capacità di diffusione della CO2 è:",["dieci volte maggiore di quella dell'ossigeno","uguale a quella dell'ossigeno","venti volte maggiore di quella dell'ossigeno","inferiore a quella dell'ossigeno"],[2]);
+  add("Respiratorio","RESP-08","La bronchite cronica è identificabile:",["dalla documentazione dell'ostruzione del flusso aereo inspiratorio","per tosse produttiva per tre mesi l'anno per almeno due anni consecutivi","per infiammazione acuta alla biopsia bronchiale","per aumento di dispnea e tosse produttiva"],[1]);
+  add("Respiratorio","RESP-09","La BPCO è caratterizzata da:",["ostruzione irreversibile del flusso aereo in fase espiratoria","ostruzione irreversibile del flusso aereo in fase inspiratoria","febbre e tosse produttiva","emottisi"],[0]);
+  add("Respiratorio","RESP-10","L'asma bronchiale può essere:",["allergico","da esposizione a sostanze tossiche in ambiente lavorativo","innescato da infezioni virali o batteriche","tutte le precedenti"],[3]);
+  add("Respiratorio","RESP-11","Le polmoniti acquisite in comunità sono diagnosticabili in soggetti:",["ricoverati in rianimazione da più di tre giorni","ricoverati in ospedale da più di due giorni","che si recano in ambulatorio per febbre e tosse spesso produttiva","ricoverati in geriatria da più di quattro giorni"],[2]);
+  add("Respiratorio","RESP-12","La BPCO può manifestarsi clinicamente con uno dei seguenti fenotipi:",["pink puffer","dita a bacchetta di tamburo","astenia e febbre serotina","ostruzione irreversibile del flusso aereo"],[0]);
+  add("Respiratorio","RESP-13","La fibrosi polmonare idiopatica si presenta caratteristicamente con:",["dispnea da sforzo e tosse secca ad esordio subdolo","febbre ed emoftoe","pleurite","astenia muscolare"],[0]);
+  add("Respiratorio","RESP-14","I carcinomi del polmone periferici e non ancora diffusi sono spesso diagnosticati per:",["reperto radiologico occasionale","dispnea da sforzo","emoftoe","tosse produttiva"],[0]);
+  add("Respiratorio","RESP-15","Quale affermazione sulla capacità di diffusione dell'ossigeno attraverso la membrana alveolo capillare non è vera?",["è direttamente proporzionale alla superficie della membrana","è inversamente proporzionale allo spessore della membrana","è direttamente misurabile mediante la spirometria"],[2]);
+  add("Respiratorio","RESP-16","Quale microorganismo non rappresenta un comune responsabile della polmonite acquisita in comunità?",["Streptococcus pneumoniae","Haemophilus influenzae","Escherichia coli"],[2]);
+  add("Respiratorio","RESP-17","La distinzione fra versamento pleurico esudato e trasudato è definita da:",["valore di proteine e LDH rispetto al sangue periferico","percentuale di emazie rispetto al sangue periferico","esame microbiologico"],[0]);
+  add("Respiratorio","RESP-18","Quale affermazione sulla fibrosi polmonare idiopatica non è vera?",["è la forma più grave di interstiziopatia polmonare","colpisce prevalentemente le donne di età media pari a 50 anni","colpisce prevalentemente gli uomini di età media pari a 65 anni"],[1]);
+  add("Respiratorio","RESP-19","Quale patologia può causare insufficienza respiratoria per effetto spazio morto?",["polmonite lobare","embolia polmonare","ARDS"],[1]);
+  add("Respiratorio","RESP-20","Le seguenti patologie si associano a deficit ventilatorio restrittivo, tranne una:",["patologia neuromuscolare","BPCO","fibrosi polmonare idiopatica"],[1]);
+  add("Respiratorio","RESP-21","Quale fra le seguenti frasi è vera?",["l'insufficienza respiratoria ipossiemica ipercapnica tipo 2 è dovuta a pump failure","l'insufficienza respiratoria ipossiemica ipercapnica tipo 2 è dovuta a deficit di diffusione dell'ossigeno","l'insufficienza respiratoria ipossiemica ipercapnica tipo 2 rappresenta l'effetto spazio morto","l'insufficienza respiratoria ipossiemica tipo 1 è dovuta a pump failure"],[0]);
+  add("Respiratorio","RESP-22","Il tumore del polmone periferico rispetto a quello più centrale è:",["caratterizzato da sintomi già in fase iniziale","spesso diagnosticato in soggetti asintomatici","un carcinoma squamocellulare"],[1]);
+  add("Respiratorio","RESP-23","Il ruolo principale dei polmoni è:",["scambio dei gas fra sangue e aria","produzione di citochine","sostenere la risposta immunologica"],[0]);
+  add("Respiratorio","RESP-24","La spirometria non misura:",["il volume di riserva inspiratoria","il volume di riserva espiratoria","la capacità polmonare totale"],[2]);
+  add("Respiratorio","RESP-25","Quale affermazione sull'asma è la più corretta?",["malattia infiammatoria con ostruzione episodica reversibile delle vie aeree","malattia cronica progressiva con ostruzione irreversibile","solo con TAC torace si fa diagnosi"],[0]);
+  add("Respiratorio","RESP-26","Secondo la definizione corrente di BPCO, quale affermazione è la più valida?",["sintomi respiratori cronici e riduzione irreversibile del flusso aereo","ostruzione reversibile del flusso aereo","polmonite a botte"],[0]);
+  add("Respiratorio","RESP-27","La spirometria permette di suddividere i pazienti pneumologici in:",["iperinsufflazione vs riduzione del flusso tele espiratorio","incapacità ventilatoria ostruttiva vs restrittiva","riduzione armonica di flussi e volumi vs volumi ridotti"],[1]);
+  add("Respiratorio","RESP-28","Le possibili cause del tromboembolismo venoso sono:",["condizioni associate a ipercoagulabilità del sangue","stasi venosa","entrambe le precedenti"],[2]);
+  add("Respiratorio","RESP-29","Le apnee ostruttive del sonno sono caratterizzate da:",["ostruzione parziale o completa delle vie aeree superiori durante il sonno con conseguente ipossia","ostruzione reversibile delle piccole vie aeree durante espirazione forzata o sotto sforzo","russamento e incubi durante il sonno"],[0]);
+
+  add("Nefrologia","NEFRO-01","Nella popolazione italiana la prevalenza di malattia renale cronica nei diversi stadi evolutivi è:",["21%","0,5%","6-8%","33%"],[2]);
+  add("Nefrologia","NEFRO-02","Gli stadi della malattia renale cronica sono:",["5, di cui il terzo con 2 sottoclassi A e B","12","31","50"],[0]);
+  add("Nefrologia","NEFRO-03","Gli stadi della malattia renale cronica sono calcolati in base a:",["funzione renale (eGFR) associata al valore di proteinuria o albuminuria","valore di potassio nel sangue","valore di emoglobina","tutte le precedenti"],[0]);
+  add("Nefrologia","NEFRO-04","La dieta nella fase conservativa dell'insufficienza renale cronica è prevalentemente:",["ipoproteica","iperproteica","iperlipidica","nessuna delle precedenti"],[0]);
+  add("Nefrologia","NEFRO-05","La terapia sostitutiva degli stadi terminali dell'insufficienza renale cronica può essere:",["emodialisi","dialisi peritoneale","trapianto","tutte le precedenti"],[3]);
+  add("Nefrologia","NEFRO-06","In Italia la prevalenza di insufficienza renale cronica terminale in trattamento dialitico è:",["meno di 500 pazienti per milione di abitanti","650-800 pazienti per milione di abitanti","oltre 1500 pazienti per milione di abitanti","non può essere calcolata"],[1]);
+  add("Nefrologia","NEFRO-07","Una controindicazione del trapianto renale è:",["neoplasia maligna non trattata","diabete","precedente trapianto","tutte le precedenti"],[0]);
+  add("Nefrologia","NEFRO-08","L'attività fisica nei pazienti con trapianto renale è:",["sempre controindicata","consigliata dopo opportuna valutazione del quadro cardiologico","praticabile solo da pazienti con precedente storia sportiva","nessuna delle precedenti"],[1]);
+  add("Nefrologia","NEFRO-09","Lo sviluppo di malattia renale cronica è frequentemente associato alla presenza di:",["diabete","ipertensione arteriosa e patologia cardiovascolare","familiarità","tutte le precedenti"],[3]);
+  add("Nefrologia","NEFRO-10","I reni consentono:",["mantenimento dell'equilibrio acido base","escrezione delle scorie azotate","mantenimento dell'equilibrio idroelettrolitico","tutte le precedenti"],[3]);
+  add("Nefrologia","NEFRO-11","Il trapianto renale in Italia è possibile:",["da donatore vivente","da donatore cadavere","in presenza di trattamento sostitutivo artificiale o in imminenza dello stesso","tutte le precedenti"],[3]);
+  add("Nefrologia","NEFRO-12","All'aumentare dell'età il volume di filtrazione glomerulare tende a:",["aumentare","decrescere","restare stabile","decrescere solo in presenza di neoplasia renale"],[1]);
+  add("Nefrologia","NEFRO-13","Per l'esecuzione del trattamento emodialitico è necessario un elevato flusso di sangue reso possibile da:",["fistola artero venosa confezionata chirurgicamente","protesi vascolare confezionata chirurgicamente","CVC giugulare o femorale","tutte le precedenti"],[3]);
+  add("Nefrologia","NEFRO-14","Nei pazienti dializzati e trapiantati l'infezione da SARS CoV 2 ha presentato:",["incidenza aumentata e peggiore outcome rispetto alla popolazione generale","incidenza ridotta e migliore outcome rispetto alla popolazione generale","stessa incidenza e stesso outcome della popolazione generale"],[0]);
+  add("Nefrologia","NEFRO-15","La vaccinazione per SARS CoV 2 nei pazienti in trattamento dialitico è:",["non praticabile","eseguibile con riduzione del numero di somministrazioni","eseguibile con riduzione della dose per singola somministrazione","fortemente raccomandata, come in tutti i pazienti fragili"],[3]);
+  add("Nefrologia","NEFRO-16","Qual è la condizione indispensabile per effettuare un trapianto di rene da donatore vivo?",["identità HLA","gruppo sanguigno compatibile","libera volontà del donatore","vincolo di parentela"],[2]);
+  add("Nefrologia","NEFRO-17","Quale delle seguenti terapie sono potenzialmente nefrotossiche?",["antipertensivi","probiotici","FANS","antispastici"],[2]);
+  add("Nefrologia","NEFRO-18","Qual è il valore soglia della proteinuria della sindrome nefrosica?",["3,5 mg/die","3,5 g/die","3,5 g/dL","3,5 mg/L"],[1]);
+  add("Nefrologia","NEFRO-19","Quale (situazione) può essere una emergenza dialitica?",["edema polmonare acuto","incremento della creatininemia a 1,8 mg%","ipertensione polmonare","incremento delle AST a 201"],[0]);
+  add("Nefrologia","NEFRO-20","Qual è la forma più grave spesso irreversibile di insufficienza renale acuta?",["necrosi tubulare acuta","necrosi corticale acuta","insufficienza renale acuta post renale","insufficienza renale acuta funzionale"],[1]);
+  add("Nefrologia","NEFRO-21","Il lupus eritematoso sistemico:",["è una malattia geneticamente trasmessa","si può manifestare con proteinuria","è una malattia linfatica","è una patologia ematologica"],[1]);
+  add("Nefrologia","NEFRO-22","Quali dimensioni longitudinali possono raggiungere i reni nel paziente da lungo tempo in dialisi?",["8,5-9 cm","10,5-11,5 cm","14-15,5 cm","6,5-7,5 cm"],[3]);
+  add("Nefrologia","NEFRO-23","Quale fra le seguenti situazioni può causare insufficienza renale acuta?",["shock cardiogeno","aumento della ferritina","iperpotassiemia","eritema allergico"],[0]);
+  add("Nefrologia","NEFRO-24","Nella macroematuria delle basse vie urinarie le urine sono di colore:",["rosso vivo","color coca cola","giallo paglierino","arancione"],[0]);
+  add("Nefrologia","NEFRO-25","Il rene policistico dell'adulto:",["è una nefrite glomerulare","è una malattia geneticamente ereditata","è una malattia macrovascolare del rene","causa danno renale acuto"],[1]);
+  add("Nefrologia","NEFRO-26","Quale affermazione relativa all'insufficienza renale cronica è corretta?",["più frequente nella razza caucasica","comporta un aumento della sodiemia","ha un andamento progressivo e irreversibile","determina un ingrandimento dei reni"],[2]);
+  add("Nefrologia","NEFRO-27","Qual è la caratteristica istologica della glomerulonefrite rapidamente progressiva?",["ispessimento della membrana basale glomerulare","aumento della matrice mesangiale","presenza di semilune o crescenze","fusione dei pedicelli dei podociti"],[2]);
+  add("Nefrologia","NEFRO-28","Quale esame di laboratorio è indicativo per la diagnosi di LES?",["anticorpi anti membrana basale","anticorpi anti PLA2","anticorpi antinucleo (ANA)","eosinofili elevati"],[2]);
+  add("Nefrologia","NEFRO-29","Come si chiama l'esame che consente la ricerca di anticorpi preformati nel siero del ricevente per il trapianto di rene?",["tipizzazione HLA","test di Coombs","crossmatch","LAC"],[2]);
+  add("Nefrologia","NEFRO-30","Dove viene posizionato il rene trapiantato?",["fossa iliaca in sede intraperitoneale","fossa iliaca in sede extraperitoneale","a livello lombare","dietro l'intestino tenue"],[1]);
+
+  add("Geriatria","GER-01","Una unità alcolica contiene:",["4-6 grammi di etanolo","10-12 grammi di etanolo","15-20 grammi di etanolo","20-30 grammi di etanolo"],[1]);
+  add("Geriatria","GER-02","I calcoli della colecisti più comuni sono:",["colesterinici","pigmentati","misti","nessuna delle precedenti"],[0]);
+  add("Geriatria","GER-03","La secchezza delle ghiandole salivari e lacrimali è comunemente presente:",["nell'artrite reumatoide","nelle spondiloartriti","nella sindrome di Sjogren","nella dermatomiosite o polimiosite"],[2]);
+  add("Geriatria","GER-04","Il fattore reumatoide è:",["un anticorpo contro un anticorpo","può essere presente nelle persone sane","è presente nel 75% con artrite reumatoide","tutte le precedenti"],[3]);
+  add("Geriatria","GER-05","Il delirium:",["è identico al delirio","è uno stato temporaneo di confusione mentale e coscienza fluttuante","è uno stato permanente di confusione mentale","è una forma di demenza"],[1]);
+  add("Geriatria","GER-06","I criteri di Beers per la farmacoterapia nell'anziano classificano i farmaci in:",["inappropriati, potenzialmente inappropriati, da usare con cautela","da usare raramente, da usare sempre, da non usare mai","da prescrivere, da deprescrivere","pericolosi, sicuri"],[0]);
+  add("Geriatria","GER-07","Quale delle seguenti scale serve a valutare il grado di autonomia dell'anziano?",["MMSE","MoCA","ADL","GDS"],[2]);
+  add("Geriatria","GER-08","Quale delle seguenti non è una componente della definizione operativa di fragilità?",["calo ponderale non intenzionale","affaticamento","riduzione della forza muscolare","perdita dell'acuità visiva"],[3]);
+
+  add("Geriatria","GER-09","Sono condizioni frequenti nel paziente anziano:",["multimorbidità","polifarmacoterapia","fragilità","tutte le precedenti"],[3]);
+  add("Geriatria","GER-10","Non è un criterio per la definizione di fragilità secondo Fried:",["riduzione della forza muscolare","riduzione della funzione renale","ridotta attività fisica","riduzione della velocità del cammino"],[1]);
+  add("Geriatria","GER-11","La valutazione multidimensionale geriatrica:",["è finalizzata a un piano di cura individualizzato e centrato sul paziente","mira a migliorare accuratezza diagnostica, preservare funzioni residue e qualità di vita","è svolta da un team multiprofessionale incluso infermiere","tutte le precedenti"],[3]);
+  add("Geriatria","GER-12","Quale fra le seguenti scale valuta lo stato funzionale?",["ADL e IADL","MMSE","Mini Nutritional Assessment","tutte le precedenti"],[0]);
+  add("Geriatria","GER-13","Polifarmacoterapia, qual è falsa?",["si definisce come contemporanea assunzione di 5 o più farmaci","è infrequente nell'anziano","si associa ad aumentato rischio di interazioni e reazioni avverse","sono raccomandate periodicamente ricognizione e riconciliazione farmacologica"],[1]);
+  add("Geriatria","GER-14","Il delirium è:",["una patologia neurodegenerativa cronica, persistente e a esordio insidioso","un disturbo cognitivo globale a insorgenza acuta, durata transitoria e andamento fluttuante","un sinonimo di demenza","tutte le precedenti"],[1]);
+  add("Geriatria","GER-15","Si associa a più elevata mortalità:",["delirium iperattivo","delirium ipoattivo","non vi è differenza di mortalità","nessuna delle precedenti"],[1]);
+  add("Geriatria","GER-16","Per la prevenzione delle cadute nell'anziano è raccomandato:",["uso di calzature idonee","intervento ambientale","periodica revisione della terapia farmacologica","tutte le precedenti"],[3]);
+  add("Geriatria","GER-17","Quale dei seguenti fattori contribuisce alla malnutrizione nell'anziano?",["fattori socioeconomici (vivere soli, ristrettezza economica)","patologie croniche e infiammatorie con aumento del catabolismo","fattori fisiologici legati all'invecchiamento","tutte le precedenti"],[3]);
+
+  add("MED INT 2","MEDINT2-01","Qual è il sintomo clinico più tipico dell’arteriopatia ostruttiva periferica agli arti inferiori?",["Dolore continuo a riposo che peggiora di notte","Edema declive bilaterale degli arti inferiori","Claudicatio intermittens","Parestesie diffuse non correlate allo sforzo"],[2]);
+  add("MED INT 2","MEDINT2-02","Il vomito: quale affermazione è corretta?",["Se marrone viene detto vomito fecaloide ed è sangue digerito","Se è rosso vivo di solito viene dal tratto G.E inferiore ed è arterioso","Se è rosso scuro è di solito di pertinenza venosa, es. da varici esofagee","Se biancastro è conseguente ad una ostruzione biliare"],[2]);
+  add("MED INT 2","MEDINT2-03","Quale tra i seguenti fattori di rischio è maggiormente associato allo sviluppo di arteriopatia periferica?",["Iperuricemia","Fumo di sigaretta","Anemia sideropenica","Ipertiroidismo"],[1]);
+  add("MED INT 2","MEDINT2-04","Quale tra i seguenti è un criterio diagnostico di diabete mellito (da confermare con una determinazione in assenza di iperglicemia inequivocabile)?",["Glicemia a digiuno ≥126 mg/dL","Glicemia a 2 ore dopo carico orale di glucosio ≥140 mg/dL","Emoglobina glicata (HbA1c) ≥6,0%","Fruttosamina elevata come test diagnostico di prima scelta"],[0]);
+  add("MED INT 2","MEDINT2-05","Quale tra i seguenti quadri clinici è più suggestivo di arterite a cellule giganti (GCA)?",["Cefalea cronica in giovane adulto con aura visiva","Dolore cervicale con rigidità mattutina isolata","Cefalea temporale di nuova insorgenza associata a claudicazione mandibolare","Vertigini ricorrenti con nausea e vomito"],[2]);
+  add("MED INT 2","MEDINT2-06","In presenza di sospetto clinico forte di arterite a cellule giganti con sintomi oculari, qual è il comportamento corretto?",["Attendere l’esito della biopsia dell’arteria temporale prima di iniziare terapia","Iniziare solo terapia analgesica e monitorare","Richiedere esclusivamente esami di imaging prima di trattare","Iniziare immediatamente terapia corticosteroidea ad alte dosi"],[3]);
+  add("MED INT 2","MEDINT2-07","In un paziente con addome acuto l'infermiere deve:",["Chiamare il medico se il paziente presenta dolore non controllato, vomito o alterazione del ???","Parametrare immediatamente il paziente e chiamare il medico solo se ci sono alterazioni","Provare a somministrare al pz piccole quantità di liquidi per vedere il transito, eventualmente dopo introduzione di SNG","Reperire un accesso venoso centrale ed eseguire subito un EGA arterioso"],[1]);
+  add("MED INT 2","MEDINT2-08","Quale affermazione descrive correttamente il rapporto tra trombosi venosa profonda (TVP) ed embolia polmonare (EP)?",["La TVP e l’EP sono patologie distinte con trattamenti diversi","L’EP è presente nel 5–10% dei pazienti con TVP","La TVP è riscontrabile nel 70% dei pazienti con embolia polmonare","La TVP è sempre sintomatica prima dell’EP"],[2]);
+  add("MED INT 2","MEDINT2-09","Qual è il principale significato clinico del D-dimero nella diagnosi di TVP?",["Confermare con certezza la presenza di trombosi venosa","Escludere la TVP grazie al suo elevato valore predittivo negativo","Valutare la gravità dell’embolia polmonare","Sostituire l’ecodoppler venoso"],[1]);
+  add("MED INT 2","MEDINT2-10","Tenesmo e incontinenza: quale opzione è corretta?",["Il tenesmo è la sensazione continua di dover andare di corpo per disturbi psicologici","L’incontinenza di feci minore consiste nell’emissione involontaria solo di aria","L’incontinenza maggiore consiste nell’emissione involontaria di feci a seguito di tosse o passaggio di aria","Nessuna delle precedenti"],[3]);
+  add("MED INT 2","MEDINT2-11","Ipotiroidismo: quale affermazione è errata?",["Quello autoimmune è detto tiroidite di Hashimoto ed è caratterizzato da autoAb anti tireoglobulina e anti tireoperossidasi","Cause iatrogene di ipotiroidismo sono terapia con amiodarone cronica, litio e radioterapia con iodio","Nell’ipotiroidismo congenito spesso si assiste a ritardi di crescita e alterazioni neurologiche se non trattato","L’ipotiroidismo autoimmune inizialmente può associarsi a gozzo, successivamente ad atrofia della ghiandola, ed è caratterizzato da bassi livelli di fT3 ma non di fT4"],[3]);
+  add("MED INT 2","MEDINT2-12","Il diabete mellito: quale affermazione è corretta?",["Può esser causato da ridotta produzione di insulina e ridotta produzione di glucosio","Gli ormoni che favoriscono iperglicemia sono insulina, adrenalina e cortisolo","Durante il digiuno ci sono aumentati livelli di insulina e bassi livelli di glucagone","L’insulina favorisce la glicolisi, la glicogenosintesi e, a livello muscolare, favorisce l’uptake di glucosio dalle cellule"],[3]);
+  add("MED INT 2","MEDINT2-13","Nell’epatite acuta: quale affermazione è corretta?",["Le transaminasi sono aumentate per meno di 4 mesi","Dolore tipico in fianco sinistro e vomito","Quella fulminante può esser causata da farmaci, il più frequente l’aspirina","L’epatite fulminante è caratterizzata da alterazione del sensorio, difetti di coagulazione, insufficienza multi-organo"],[3]);
+
+
+  function sanitizeBank(bank){
+    var fixed = [];
+    for(var i=0;i<bank.length;i++){
+      var q = bank[i];
+      var stem = fixTachy(q.stem);
+      var opts = [];
+      for(var j=0;j<q.options.length;j++){
+        opts.push(fixTachy(q.options[j]));
+      }
+      fixed.push({cat:q.cat, id:q.id, stem:stem, options:opts, correct:q.correct});
+    }
+
+    var seen = {};
+    var out = [];
+    var removed = [];
+    for(var k=0;k<fixed.length;k++){
+      var qq = fixed[k];
+      var key = normalizeText(qq.stem) + "|" + qq.options.map(normalizeText).join("|");
+      if(seen[key]){
+        removed.push(qq.id);
+        continue;
+      }
+      seen[key] = qq.id;
+      out.push(qq);
+    }
+    return { bank: out, removed: removed };
+  }
+
+  var DEDUPE = sanitizeBank(RAW_BANK);
+  var BANK = DEDUPE.bank;
+
+  var CATS = uniq(BANK.map(function(q){ return q.cat; })).sort();
+
+  var KEY_NEW = "medspecapp_state_v147";
+  var KEY_OLD = "medicoSpecQuiz_v1";
+
+  var DEFAULT_STATE = {
+    prefs: {
+      theme:"dark",
+      mode:"quiz",
+      cat:"ALL",
+      num:"20",
+      shuffle:"yes",
+      showSolution:true,
+      autoNext:false,
+      timerMode:"off",
+      timerMinutes:15,
+      progressBar:true,
+      fontSize:"m",
+      focus:false
+    },
+    stats: { answered:0, correct:0, streak:0, bestStreak:0 },
+    wrong: [],
+    known: []
+  };
+
+  function normalizeState(obj){
+    if(!obj || typeof obj !== "object"){ obj = {}; }
+    if(!obj.prefs){ obj.prefs = {}; }
+    if(!obj.stats){ obj.stats = {}; }
+    var p = obj.prefs;
+    var s = obj.stats;
+
+    function pick(val, def){ return (val === undefined || val === null) ? def : val; }
+
+    p.theme = pick(p.theme, DEFAULT_STATE.prefs.theme);
+    p.mode = pick(p.mode, DEFAULT_STATE.prefs.mode);
+    p.cat = pick(p.cat, DEFAULT_STATE.prefs.cat);
+    p.num = pick(p.num, DEFAULT_STATE.prefs.num);
+    p.shuffle = pick(p.shuffle, DEFAULT_STATE.prefs.shuffle);
+    p.showSolution = pick(p.showSolution, DEFAULT_STATE.prefs.showSolution);
+    p.autoNext = pick(p.autoNext, DEFAULT_STATE.prefs.autoNext);
+    p.timerMode = pick(p.timerMode, DEFAULT_STATE.prefs.timerMode);
+    p.timerMinutes = pick(p.timerMinutes, DEFAULT_STATE.prefs.timerMinutes);
+    p.progressBar = pick(p.progressBar, DEFAULT_STATE.prefs.progressBar);
+    p.fontSize = pick(p.fontSize, DEFAULT_STATE.prefs.fontSize);
+    p.focus = pick(p.focus, DEFAULT_STATE.prefs.focus);
+
+    s.answered = pick(s.answered, 0);
+    s.correct = pick(s.correct, 0);
+    s.streak = pick(s.streak, 0);
+    s.bestStreak = pick(s.bestStreak, 0);
+
+    if(!Array.isArray(obj.wrong)){ obj.wrong = []; }
+    if(!Array.isArray(obj.known)){ obj.known = []; }
+
+    return obj;
+  }
+
+  var STATE = (function(){
+    var raw = lsGet(KEY_NEW);
+    var obj = raw ? safeJsonParse(raw) : null;
+    if(!obj){
+      var oldRaw = lsGet(KEY_OLD);
+      var oldObj = oldRaw ? safeJsonParse(oldRaw) : null;
+      if(oldObj){
+        oldObj = normalizeState(oldObj);
+        return oldObj;
+      }
+      return JSON.parse(JSON.stringify(DEFAULT_STATE));
+    }
+    return normalizeState(obj);
+  })();
+
+  var BANK_IDS = {};
+  for(var bi=0;bi<BANK.length;bi++){ BANK_IDS[BANK[bi].id] = true; }
+  STATE.wrong = STATE.wrong.filter(function(id){ return BANK_IDS[id]; });
+  STATE.known = STATE.known.filter(function(id){ return BANK_IDS[id]; });
+
+  function save(){ lsSet(KEY_NEW, JSON.stringify(STATE)); }
+
+  function resetStats(){
+    STATE.stats = { answered:0, correct:0, streak:0, bestStreak:0 };
+    STATE.wrong = [];
+    STATE.known = [];
+    save();
+  }
+
+  var elBody = document.body;
+
+  var screenHome = document.getElementById("screenHome");
+  var screenPlay = document.getElementById("screenPlay");
+  var screenSummary = document.getElementById("screenSummary");
+
+  var btnSettings = document.getElementById("btnSettings");
+  var settingsBack = document.getElementById("settingsBack");
+  var btnCloseSettings = document.getElementById("btnCloseSettings");
+
+  var btnTheme = document.getElementById("btnTheme");
+  var btnHome = document.getElementById("btnHome");
+
+  var selMode = document.getElementById("selMode");
+  var selCat = document.getElementById("selCat");
+  var selNum = document.getElementById("selNum");
+  var selShuffle = document.getElementById("selShuffle");
+  var btnStart = document.getElementById("btnStart");
+  var btnReviewWrong = document.getElementById("btnReviewWrong");
+  var btnFocus = document.getElementById("btnFocus");
+  var homeInfo = document.getElementById("homeInfo");
+
+  var pillStats = document.getElementById("pillStats");
+  var pillWrong = document.getElementById("pillWrong");
+  var pillStreak = document.getElementById("pillStreak");
+
+  var tweakList = document.getElementById("tweakList");
+  var ideaList = document.getElementById("ideaList");
+
+  var btnExport = document.getElementById("btnExport");
+  var btnImport = document.getElementById("btnImport");
+  var btnReset = document.getElementById("btnReset");
+  var ioBox = document.getElementById("ioBox");
+
+  var btnExport2 = document.getElementById("btnExport2");
+  var btnImport2 = document.getElementById("btnImport2");
+  var btnReset2 = document.getElementById("btnReset2");
+  var ioBox2 = document.getElementById("ioBox2");
+
+  var pillProg = document.getElementById("pillProg");
+  var pillPct = document.getElementById("pillPct");
+  var pillCat = document.getElementById("pillCat");
+  var pillMode = document.getElementById("pillMode");
+  var pillTime = document.getElementById("pillTime");
+
+  var progressWrap = document.getElementById("progressWrap");
+  var progressFill = document.getElementById("progressFill");
+
+  var btnToggleKnown = document.getElementById("btnToggleKnown");
+  var btnFlagWrong = document.getElementById("btnFlagWrong");
+
+  var qStem = document.getElementById("qStem");
+  var quizArea = document.getElementById("quizArea");
+  var memArea = document.getElementById("memArea");
+  var memAnswer = document.getElementById("memAnswer");
+  var resText = document.getElementById("resText");
+  var resDetail = document.getElementById("resDetail");
+  var btnPrev = document.getElementById("btnPrev");
+  var btnShowSol = document.getElementById("btnShowSol");
+  var btnSubmit = document.getElementById("btnSubmit");
+  var btnNext = document.getElementById("btnNext");
+
+  var btnSumHome = document.getElementById("btnSumHome");
+  var btnSumWrong = document.getElementById("btnSumWrong");
+  var sumBadge = document.getElementById("sumBadge");
+  var sumTitle = document.getElementById("sumTitle");
+  var sumSub = document.getElementById("sumSub");
+  var sumStats = document.getElementById("sumStats");
+  var sumNotes = document.getElementById("sumNotes");
+
+  var setThemeLight = document.getElementById("setThemeLight");
+  var setFontSize = document.getElementById("setFontSize");
+  var setFocus = document.getElementById("setFocus");
+  var setDefaultNum = document.getElementById("setDefaultNum");
+  var setShuffle = document.getElementById("setShuffle");
+  var setShowSol = document.getElementById("setShowSol");
+  var setAutoNext = document.getElementById("setAutoNext");
+  var setTimerMode = document.getElementById("setTimerMode");
+  var setTimerMin = document.getElementById("setTimerMin");
+  var setProgress = document.getElementById("setProgress");
+  var infoText = document.getElementById("infoText");
+  var dedupeText = document.getElementById("dedupeText");
+
+  function renderLists(){
+    tweakList.innerHTML = "";
+    for(var i=0;i<TWEAKS.length;i++){
+      var li = document.createElement("li");
+      li.textContent = TWEAKS[i];
+      tweakList.appendChild(li);
+    }
+    ideaList.innerHTML = "";
+    for(var j=0;j<IDEAS.length;j++){
+      var li2 = document.createElement("li");
+      li2.textContent = IDEAS[j];
+      ideaList.appendChild(li2);
+    }
+  }
+
+  function applyTheme(){
+    if(STATE.prefs.theme === "light"){
+      elBody.classList.add("themeLight");
+      elBody.classList.remove("themeDark");
+    }else{
+      elBody.classList.remove("themeLight");
+      elBody.classList.add("themeDark");
+    }
+  }
+
+  function applyFontSize(){
+    elBody.classList.remove("fsS","fsM","fsL");
+    if(STATE.prefs.fontSize === "s"){ elBody.classList.add("fsS"); }
+    else if(STATE.prefs.fontSize === "l"){ elBody.classList.add("fsL"); }
+    else{ elBody.classList.add("fsM"); }
+  }
+
+  function applyPrefsToUi(){
+    applyTheme();
+    applyFontSize();
+
+    selMode.value = STATE.prefs.mode || "quiz";
+    selCat.value = STATE.prefs.cat || "ALL";
+    selNum.value = STATE.prefs.num || "20";
+    selShuffle.value = STATE.prefs.shuffle || "yes";
+
+    setThemeLight.checked = (STATE.prefs.theme === "light");
+    setFontSize.value = STATE.prefs.fontSize || "m";
+    setFocus.checked = !!STATE.prefs.focus;
+    setDefaultNum.value = STATE.prefs.num || "20";
+    setShuffle.checked = (STATE.prefs.shuffle === "yes");
+    setShowSol.checked = !!STATE.prefs.showSolution;
+    setAutoNext.checked = !!STATE.prefs.autoNext;
+    setTimerMode.value = STATE.prefs.timerMode || "off";
+    setTimerMin.value = String(clamp(parseInt(STATE.prefs.timerMinutes,10) || 15, 1, 240));
+    setProgress.checked = !!STATE.prefs.progressBar;
+
+    btnFocus.textContent = isFocusOn() ? "Focus attivo" : "Focus";
+  }
+
+  function updateSettingsInfo(){
+    var txt = WATERMARK + " • " + APP_NAME + " " + APP_VERSION + ". Offline single file.";
+    infoText.textContent = txt;
+    if(DEDUPE.removed.length){
+      dedupeText.textContent = "Rimossi " + DEDUPE.removed.length + " duplicati: " + DEDUPE.removed.join(", ");
+    }else{
+      dedupeText.textContent = "Nessun duplicato rilevato all'avvio.";
+    }
+  }
+
+  function populateCategories(){
+    while(selCat.children.length > 1){ selCat.removeChild(selCat.lastChild); }
+    for(var i=0;i<CATS.length;i++){
+      var opt = document.createElement("option");
+      opt.value = CATS[i];
+      opt.textContent = CATS[i];
+      selCat.appendChild(opt);
+    }
+  }
+
+  function filteredQuestions(cat){
+    if(cat === "ALL"){ return BANK.slice(); }
+    return BANK.filter(function(q){ return q.cat === cat; });
+  }
+
+  function getById(qid){
+    for(var i=0;i<BANK.length;i++){
+      if(BANK[i].id === qid){ return BANK[i]; }
+    }
+    return null;
+  }
+
+  function arraysEqual(a,b){
+    if(a.length !== b.length){ return false; }
+    for(var i=0;i<a.length;i++){ if(a[i] !== b[i]){ return false; } }
+    return true;
+  }
+
+  function setResult(text, cls, detail){
+    resText.textContent = text || "";
+    resText.className = "result " + (cls || "");
+    resDetail.textContent = detail || "";
+  }
+
+  function isKnown(qid){ return STATE.known.indexOf(qid) >= 0; }
+  function isWrong(qid){ return STATE.wrong.indexOf(qid) >= 0; }
+
+  function toggleKnown(qid){
+    var i = STATE.known.indexOf(qid);
+    if(i >= 0){ STATE.known.splice(i,1); }
+    else{ STATE.known.push(qid); }
+    save();
+  }
+  function toggleWrong(qid){
+    var i = STATE.wrong.indexOf(qid);
+    if(i >= 0){ STATE.wrong.splice(i,1); }
+    else{ STATE.wrong.push(qid); }
+    save();
+  }
+
+  function updateHome(){
+    var answered = STATE.stats.answered || 0;
+    var correct = STATE.stats.correct || 0;
+    var pct = answered ? Math.round((correct/answered)*100) : 0;
+    pillStats.textContent = answered + " risposte, " + pct + "% corrette";
+    pillWrong.textContent = STATE.wrong.length + " errori salvati";
+    pillStreak.textContent = "Streak " + STATE.stats.streak + " (best " + STATE.stats.bestStreak + ")";
+    var list = filteredQuestions(STATE.prefs.cat || "ALL");
+    homeInfo.textContent = list.length + " domande disponibili";
+  }
+
+  function showHome(){
+    screenPlay.classList.add("hidden");
+    screenSummary.classList.add("hidden");
+    screenHome.classList.remove("hidden");
+    btnHome.disabled = true;
+    stopTimer();
+    if(isFocusOn()){ exitFocus(); }
+    updateHome();
+  }
+
+  function showPlay(){
+    screenHome.classList.add("hidden");
+    screenSummary.classList.add("hidden");
+    screenPlay.classList.remove("hidden");
+    btnHome.disabled = false;
+  }
+
+  function showSummary(payload){
+    screenHome.classList.add("hidden");
+    screenPlay.classList.add("hidden");
+    screenSummary.classList.remove("hidden");
+    btnHome.disabled = false;
+    stopTimer();
+    var modeLabel = payload && payload.isExam ? "Simulazione esame" : "Sessione";
+    sumTitle.textContent = modeLabel + " - riepilogo";
+
+    if(payload && payload.isExam){
+      var pass = payload.correct >= payload.passMark;
+      sumBadge.textContent = pass ? "Promosso" : "Non promosso";
+      sumBadge.style.color = pass ? "var(--good)" : "var(--bad)";
+      sumSub.textContent = "Obiettivo: " + payload.passMark + " corrette su " + payload.total;
+      sumNotes.textContent = pass ? "Ottimo. Non rovinare tutto andando a letto alle 4." : "Non è finita: ripasso errori e riprova.";
+    }else{
+      sumBadge.textContent = "Finito";
+      sumBadge.style.color = "";
+      sumSub.textContent = "Domande: " + payload.total + " • Tempo: " + (payload.timeLabel || "n.d.");
+      sumNotes.textContent = "Ripassa gli errori, poi rifai una sessione breve.";
+    }
+
+    var pct = payload.total ? Math.round((payload.correct/payload.total)*100) : 0;
+    sumStats.innerHTML = ""
+      + "<div><strong>Corrette:</strong> " + payload.correct + " su " + payload.total + " (" + pct + "%)</div>"
+      + "<div><strong>Sbagliate:</strong> " + (payload.total - payload.correct) + "</div>"
+      + "<div><strong>Errori salvati:</strong> " + STATE.wrong.length + "</div>";
+  }
+
+  function readSelection(){
+    var nodes = quizArea.querySelectorAll("input");
+    var chosen = [];
+    for(var i=0;i<nodes.length;i++){
+      if(nodes[i].checked){
+        chosen.push(parseInt(nodes[i].value,10));
+      }
+    }
+    chosen.sort(function(a,b){ return a-b; });
+    return chosen;
+  }
+
+  function lockInputs(){
+    var nodes = quizArea.querySelectorAll("input");
+    for(var i=0;i<nodes.length;i++){ nodes[i].disabled = true; }
+    btnSubmit.disabled = true;
+    btnShowSol.disabled = true;
+  }
+
+  var SESSION = null;
+  var REVIEW_MODE = false;
+
+  function makeSession(list, num, doShuffle, isExam){
+    var ids = list.map(function(q){ return q.id; });
+    if(doShuffle){ ids = shuffle(ids); }
+    if(isExam){
+      ids = ids.slice(0, clamp(15,1,ids.length));
+    }else if(num !== "all"){
+      var n = parseInt(num,10);
+      if(!isNaN(n)){ ids = ids.slice(0, clamp(n,1,ids.length)); }
+    }
+    return {
+      ids: ids,
+      idx: 0,
+      done: false,
+      revealed: false,
+      solutionVisible: false,
+      correctCount: 0,
+      isExam: !!isExam,
+      passMark: 9
+    };
+  }
+
+  function updateProgress(){
+    if(!SESSION){ return; }
+    var total = SESSION.ids.length;
+    var cur = SESSION.idx + 1;
+    var pct = total ? Math.round((cur/total)*100) : 0;
+    pillProg.textContent = cur + " di " + total;
+    pillPct.textContent = pct + "%";
+    if(STATE.prefs.progressBar){
+      progressWrap.classList.remove("hidden");
+      progressFill.style.width = pct + "%";
+    }else{
+      progressWrap.classList.add("hidden");
+    }
+  }
+
+  function setModePills(q){
+    var mode = STATE.prefs.mode || "quiz";
+    pillCat.textContent = q.cat;
+    if(mode === "mem"){ pillMode.textContent = "Memoria"; }
+    else if(SESSION && SESSION.isExam){ pillMode.textContent = "Simulazione esame"; }
+    else if(REVIEW_MODE){ pillMode.textContent = "Ripasso errori"; }
+    else{ pillMode.textContent = "Quiz"; }
+  }
+
+  function renderQuestion(){
+    if(!SESSION){ return; }
+    var total = SESSION.ids.length;
+    var qid = SESSION.ids[SESSION.idx];
+    var q = getById(qid);
+    if(!q){ setResult("Errore", "bad", "Domanda mancante"); return; }
+
+    var mode = STATE.prefs.mode || "quiz";
+
+    setModePills(q);
+    qStem.textContent = q.stem;
+
+    btnToggleKnown.textContent = isKnown(qid) ? "Segna: So" : "Segna: Non so";
+    btnFlagWrong.textContent = isWrong(qid) ? "Segna: Errore" : "Togli: Errore";
+
+    quizArea.innerHTML = "";
+    memAnswer.textContent = "";
+    setResult("", "", "");
+
+    SESSION.revealed = false;
+    SESSION.solutionVisible = false;
+
+    btnPrev.disabled = (SESSION.idx === 0);
+    btnNext.classList.add("hidden");
+    btnSubmit.classList.remove("hidden");
+    btnSubmit.disabled = false;
+    btnShowSol.classList.add("hidden");
+    btnShowSol.disabled = false;
+
+    if(mode === "mem"){
+      memArea.classList.remove("hidden");
+      quizArea.classList.add("hidden");
+      btnSubmit.classList.add("hidden");
+      btnShowSol.classList.add("hidden");
+      btnNext.classList.remove("hidden");
+      var ans = q.correct.map(function(ix){ return toLetter(ix) + ") " + (q.options[ix] || ""); }).join(" | ");
+      memAnswer.textContent = ans;
+    }else{
+      memArea.classList.add("hidden");
+      quizArea.classList.remove("hidden");
+
+      var multi = q.correct.length > 1;
+      for(var i=0;i<q.options.length;i++){
+        var optWrap = document.createElement("label");
+        optWrap.className = "opt";
+        var inp = document.createElement("input");
+        inp.type = multi ? "checkbox" : "radio";
+        inp.name = "opt";
+        inp.value = String(i);
+        inp.setAttribute("aria-label", "Opzione " + toLetter(i));
+        var letter = document.createElement("div");
+        letter.className = "optLetter";
+        letter.textContent = toLetter(i) + ")";
+        var txt = document.createElement("div");
+        txt.className = "optText";
+        txt.textContent = q.options[i];
+        optWrap.appendChild(inp);
+        optWrap.appendChild(letter);
+        optWrap.appendChild(txt);
+        quizArea.appendChild(optWrap);
+      }
+
+      if(!STATE.prefs.showSolution){
+        btnShowSol.classList.remove("hidden");
+        btnShowSol.disabled = true;
+      }
+    }
+
+    updateProgress();
+    updateTimerPill();
+  }
+
+  function revealSolution(markOnly){
+    var qid = SESSION.ids[SESSION.idx];
+    var q = getById(qid);
+    if(!q){ return; }
+
+    var optLabels = quizArea.querySelectorAll(".opt");
+    for(var i=0;i<optLabels.length;i++){
+      var inp = optLabels[i].querySelector("input");
+      var idx = parseInt(inp.value,10);
+      var isCorr = q.correct.indexOf(idx) >= 0;
+      optLabels[i].classList.remove("correct");
+      if(isCorr){ optLabels[i].classList.add("correct"); }
+      if(markOnly){
+        optLabels[i].classList.remove("wrong");
+      }
+    }
+
+    var corrLetters = q.correct.map(function(ix){ return toLetter(ix); }).join(" e ");
+    resDetail.textContent = "Corretta: " + corrLetters;
+    SESSION.solutionVisible = true;
+  }
+
+  function submitQuiz(){
+    if(!SESSION){ return; }
+    var qid = SESSION.ids[SESSION.idx];
+    var q = getById(qid);
+    if(!q){ return; }
+
+    var chosen = readSelection();
+    if(chosen.length === 0){
+      setResult("Seleziona una risposta", "bad", "");
+      return;
+    }
+
+    var correctSorted = q.correct.slice().sort(function(a,b){ return a-b; });
+    var ok = arraysEqual(chosen, correctSorted);
+
+    STATE.stats.answered += 1;
+    if(ok){
+      STATE.stats.correct += 1;
+      STATE.stats.streak += 1;
+      if(STATE.stats.streak > STATE.stats.bestStreak){ STATE.stats.bestStreak = STATE.stats.streak; }
+      setResult("Corretto", "ok", "");
+      if(isWrong(qid)){ toggleWrong(qid); }
+      if(SESSION.isExam){ SESSION.correctCount += 1; }
+    }else{
+      STATE.stats.streak = 0;
+      setResult("Sbagliato", "bad", "");
+      if(!isWrong(qid)){ toggleWrong(qid); }
+    }
+
+    var chosenLetters = chosen.map(function(ix){ return toLetter(ix); }).join(" e ");
+    if(STATE.prefs.showSolution){
+      var corrLetters = correctSorted.map(function(ix){ return toLetter(ix); }).join(" e ");
+      resDetail.textContent = "Tua: " + chosenLetters + " | Corretta: " + corrLetters;
+    }else{
+      resDetail.textContent = "Tua: " + chosenLetters;
+      btnShowSol.disabled = false;
+    }
+
+    var optLabels = quizArea.querySelectorAll(".opt");
+    for(var i=0;i<optLabels.length;i++){
+      var inp = optLabels[i].querySelector("input");
+      var idx = parseInt(inp.value,10);
+      var isCorr = q.correct.indexOf(idx) >= 0;
+      var isChosen = chosen.indexOf(idx) >= 0;
+      optLabels[i].classList.remove("correct");
+      optLabels[i].classList.remove("wrong");
+      if(STATE.prefs.showSolution && isCorr){ optLabels[i].classList.add("correct"); }
+      if(isChosen && !isCorr){ optLabels[i].classList.add("wrong"); }
+      inp.disabled = true;
+    }
+
+    SESSION.revealed = true;
+    save();
+    updateHome();
+
+    btnNext.classList.remove("hidden");
+    btnSubmit.classList.add("hidden");
+
+    if(STATE.prefs.autoNext){
+      setTimeout(function(){
+        nextQuestion();
+      }, 900);
+    }
+  }
+
+  function nextQuestion(){
+    if(!SESSION){ return; }
+
+    var mode = STATE.prefs.mode || "quiz";
+    if(mode !== "mem" && !SESSION.revealed){ return; }
+
+    if(SESSION.idx < SESSION.ids.length - 1){
+      SESSION.idx += 1;
+      renderQuestion();
+      return;
+    }
+
+    var total = SESSION.ids.length;
+    var correct = SESSION.isExam ? SESSION.correctCount : (STATE.stats.correct || 0);
+    var timeLabel = timerLabel();
+    showSummary({
+      total: total,
+      correct: SESSION.isExam ? SESSION.correctCount : (countCorrectThisSession() || 0),
+      isExam: SESSION.isExam,
+      passMark: SESSION.passMark,
+      timeLabel: timeLabel
+    });
+  }
+
+  function prevQuestion(){
+    if(!SESSION){ return; }
+    if(SESSION.idx > 0){
+      SESSION.idx -= 1;
+      renderQuestion();
+    }
+  }
+
+  function countCorrectThisSession(){
+    if(!SESSION){ return 0; }
+    var total = SESSION.ids.length;
+    var correct = 0;
+    for(var i=0;i<total;i++){
+      var qid = SESSION.ids[i];
+      var q = getById(qid);
+      if(!q){ continue; }
+    }
+    return null;
+  }
+
+  function startSession(fromWrong){
+    var mode = selMode.value;
+    var cat = selCat.value;
+    var num = selNum.value;
+    var shuf = selShuffle.value;
+
+    STATE.prefs.mode = mode;
+    STATE.prefs.cat = cat;
+    STATE.prefs.num = (mode === "exam") ? "15" : num;
+    STATE.prefs.shuffle = (mode === "exam") ? "yes" : shuf;
+    save();
+
+    var baseList = filteredQuestions(cat);
+
+    REVIEW_MODE = false;
+    if(fromWrong){
+      REVIEW_MODE = true;
+      var wset = {};
+      for(var i=0;i<STATE.wrong.length;i++){ wset[STATE.wrong[i]] = true; }
+      baseList = baseList.filter(function(q){ return wset[q.id]; });
+      if(baseList.length === 0){
+        homeInfo.textContent = "Nessun errore salvato per questa materia.";
+        return;
+      }
+      mode = "quiz";
+      STATE.prefs.mode = mode;
+      STATE.prefs.shuffle = "yes";
+      STATE.prefs.num = "all";
+      save();
+      selMode.value = "quiz";
+      selShuffle.value = "yes";
+      selNum.value = "all";
+    }
+
+    var isExam = (mode === "exam");
+    SESSION = makeSession(baseList, STATE.prefs.num, (STATE.prefs.shuffle === "yes"), isExam);
+
+    if(STATE.prefs.focus){ enterFocus(); }
+
+    showPlay();
+    startTimer();
+    renderQuestion();
+  }
+
+  function timerLabel(){
+    if(!TIMER.active){ return "timer off"; }
+    if(TIMER.mode === "up"){ return "cronometro " + formatMMSS(TIMER.seconds()); }
+    if(TIMER.mode === "down"){ return "countdown " + formatMMSS(TIMER.remaining()); }
+    return "timer";
+  }
+
+  function updateTimerPill(){
+    if(!TIMER.active){
+      pillTime.classList.add("hidden");
+      return;
+    }
+    pillTime.classList.remove("hidden");
+    if(TIMER.mode === "up"){
+      pillTime.textContent = formatMMSS(TIMER.seconds());
+    }else if(TIMER.mode === "down"){
+      pillTime.textContent = formatMMSS(TIMER.remaining());
+    }
+  }
+
+  var TIMER = (function(){
+    var obj = {
+      active:false,
+      mode:"off",
+      startAt:0,
+      pausedAt:0,
+      pausedSum:0,
+      downInit:0,
+      ended:false,
+      iv:null,
+      seconds:function(){
+        if(!obj.active){ return 0; }
+        var now = obj.pausedAt ? obj.pausedAt : Date.now();
+        var ms = (now - obj.startAt) - obj.pausedSum;
+        return Math.max(0, Math.floor(ms/1000));
+      },
+      remaining:function(){
+        if(!obj.active){ return 0; }
+        var spent = obj.seconds();
+        return Math.max(0, obj.downInit - spent);
+      }
+    };
+    return obj;
+  })();
+
+  function stopTimer(){
+    if(TIMER.iv){ clearInterval(TIMER.iv); TIMER.iv = null; }
+    TIMER.active = false;
+    TIMER.mode = "off";
+    TIMER.startAt = 0;
+    TIMER.pausedAt = 0;
+    TIMER.pausedSum = 0;
+    TIMER.downInit = 0;
+    TIMER.ended = false;
+    updateTimerPill();
+  }
+
+  function pauseTimer(){
+    if(!TIMER.active || TIMER.pausedAt){ return; }
+    TIMER.pausedAt = Date.now();
+    updateTimerPill();
+  }
+
+  function resumeTimer(){
+    if(!TIMER.active || !TIMER.pausedAt){ return; }
+    TIMER.pausedSum += (Date.now() - TIMER.pausedAt);
+    TIMER.pausedAt = 0;
+    updateTimerPill();
+  }
+
+  function onTimerEnd(){
+    if(!SESSION){ return; }
+    TIMER.ended = true;
+    setResult("Tempo scaduto", "bad", "Sessione terminata");
+    lockInputs();
+    btnNext.classList.add("hidden");
+    btnSubmit.classList.add("hidden");
+    setTimeout(function(){
+      showSummary({
+        total: SESSION.ids.length,
+        correct: SESSION.isExam ? SESSION.correctCount : 0,
+        isExam: SESSION.isExam,
+        passMark: SESSION.passMark,
+        timeLabel: "tempo finito"
+      });
+    }, 650);
+  }
+
+  function startTimer(){
+    stopTimer();
+    var tm = STATE.prefs.timerMode || "off";
+    if(tm === "off"){ return; }
+
+    TIMER.active = true;
+    TIMER.mode = tm;
+    TIMER.startAt = Date.now();
+    TIMER.pausedAt = 0;
+    TIMER.pausedSum = 0;
+    TIMER.ended = false;
+
+    if(tm === "down"){
+      var mins = clamp(parseInt(STATE.prefs.timerMinutes,10) || 15, 1, 240);
+      TIMER.downInit = mins * 60;
+    }
+
+    TIMER.iv = setInterval(function(){
+      if(!TIMER.active){ return; }
+      updateTimerPill();
+      if(TIMER.mode === "down" && TIMER.remaining() <= 0 && !TIMER.ended){
+        onTimerEnd();
+      }
+    }, 250);
+
+    updateTimerPill();
+  }
+
+  function openSettings(){
+    settingsBack.classList.add("open");
+    pauseTimer();
+    updateSettingsInfo();
+  }
+  function closeSettings(){
+    settingsBack.classList.remove("open");
+    resumeTimer();
+  }
+
+  function isFocusOn(){
+    return !!STATE.prefs.focus;
+  }
+
+  function enterFocus(){
+    if(!document.documentElement.requestFullscreen){ return; }
+    try{ document.documentElement.requestFullscreen(); }catch(e){}
+  }
+  function exitFocus(){
+    if(!document.exitFullscreen){ return; }
+    try{ document.exitFullscreen(); }catch(e){}
+  }
+  function toggleFocus(){
+    STATE.prefs.focus = !STATE.prefs.focus;
+    save();
+    applyPrefsToUi();
+    if(STATE.prefs.focus){ enterFocus(); }
+    else{ exitFocus(); }
+  }
+
+  function exportPayload(){
+    return {
+      app: { name: APP_NAME, version: APP_VERSION, watermark: WATERMARK },
+      prefs: STATE.prefs,
+      stats: STATE.stats,
+      wrong: STATE.wrong,
+      known: STATE.known,
+      bank: BANK
+    };
+  }
+
+  function importPayload(obj){
+    if(!obj || typeof obj !== "object"){ return { ok:false, msg:"JSON non valido" }; }
+    var next = {
+      prefs: obj.prefs || obj.preferences || STATE.prefs,
+      stats: obj.stats || STATE.stats,
+      wrong: obj.wrong || [],
+      known: obj.known || []
+    };
+    next = normalizeState(next);
+
+    if(Array.isArray(obj.bank)){
+      var imported = obj.bank;
+      var clean = [];
+      for(var i=0;i<imported.length;i++){
+        var q = imported[i];
+        if(!q || typeof q !== "object"){ continue; }
+        if(typeof q.id !== "string" || typeof q.cat !== "string" || typeof q.stem !== "string"){ continue; }
+        if(!Array.isArray(q.options) || !Array.isArray(q.correct)){ continue; }
+        clean.push({cat:q.cat,id:q.id,stem:q.stem,options:q.options,correct:q.correct});
+      }
+      if(clean.length){
+        var san = sanitizeBank(clean);
+        BANK = san.bank;
+        DEDUPE = { bank: BANK, removed: san.removed };
+        CATS = uniq(BANK.map(function(qq){ return qq.cat; })).sort();
+        BANK_IDS = {};
+        for(var bi=0;bi<BANK.length;bi++){ BANK_IDS[BANK[bi].id] = true; }
+        next.wrong = next.wrong.filter(function(id){ return BANK_IDS[id]; });
+        next.known = next.known.filter(function(id){ return BANK_IDS[id]; });
+        populateCategories();
+      }
+    }
+
+    STATE = next;
+    save();
+    applyPrefsToUi();
+    updateHome();
+    updateSettingsInfo();
+    return { ok:true, msg:"Import ok" };
+  }
+
+  function bindSettings(){
+    setThemeLight.addEventListener("change", function(){
+      STATE.prefs.theme = setThemeLight.checked ? "light" : "dark";
+      save();
+      applyTheme();
+    });
+    setFontSize.addEventListener("change", function(){
+      STATE.prefs.fontSize = setFontSize.value;
+      save();
+      applyFontSize();
+    });
+    setFocus.addEventListener("change", function(){
+      STATE.prefs.focus = !!setFocus.checked;
+      save();
+      applyPrefsToUi();
+    });
+    setDefaultNum.addEventListener("change", function(){
+      STATE.prefs.num = setDefaultNum.value;
+      save();
+      selNum.value = STATE.prefs.num;
+    });
+    setShuffle.addEventListener("change", function(){
+      STATE.prefs.shuffle = setShuffle.checked ? "yes" : "no";
+      save();
+      selShuffle.value = STATE.prefs.shuffle;
+    });
+    setShowSol.addEventListener("change", function(){
+      STATE.prefs.showSolution = !!setShowSol.checked;
+      save();
+    });
+    setAutoNext.addEventListener("change", function(){
+      STATE.prefs.autoNext = !!setAutoNext.checked;
+      save();
+    });
+    setTimerMode.addEventListener("change", function(){
+      STATE.prefs.timerMode = setTimerMode.value;
+      save();
+    });
+    setTimerMin.addEventListener("change", function(){
+      var v = clamp(parseInt(setTimerMin.value,10) || 15, 1, 240);
+      STATE.prefs.timerMinutes = v;
+      setTimerMin.value = String(v);
+      save();
+    });
+    setProgress.addEventListener("change", function(){
+      STATE.prefs.progressBar = !!setProgress.checked;
+      save();
+      updateProgress();
+    });
+
+    btnExport2.addEventListener("click", function(){
+      ioBox2.value = JSON.stringify(exportPayload(), null, 2);
+    });
+    btnImport2.addEventListener("click", function(){
+      var obj = safeJsonParse(ioBox2.value);
+      var res = importPayload(obj);
+      ioBox2.value = res.ok ? "Import ok." : res.msg;
+    });
+    btnReset2.addEventListener("click", function(){
+      resetStats();
+      save();
+      updateHome();
+      ioBox2.value = "";
+    });
+  }
+
+  function wireEvents(){
+    btnSettings.addEventListener("click", openSettings);
+    btnCloseSettings.addEventListener("click", closeSettings);
+    settingsBack.addEventListener("click", function(e){
+      if(e.target === settingsBack){ closeSettings(); }
+    });
+
+    btnTheme.addEventListener("click", function(){
+      STATE.prefs.theme = (STATE.prefs.theme === "light") ? "dark" : "light";
+      save();
+      applyPrefsToUi();
+    });
+
+    btnHome.addEventListener("click", function(){ showHome(); });
+
+    selMode.addEventListener("change", function(){ STATE.prefs.mode = selMode.value; save(); });
+    selCat.addEventListener("change", function(){ STATE.prefs.cat = selCat.value; save(); updateHome(); });
+    selNum.addEventListener("change", function(){ STATE.prefs.num = selNum.value; save(); });
+    selShuffle.addEventListener("change", function(){ STATE.prefs.shuffle = selShuffle.value; save(); });
+
+    btnStart.addEventListener("click", function(){ startSession(false); });
+    btnReviewWrong.addEventListener("click", function(){ startSession(true); });
+
+    btnFocus.addEventListener("click", function(){ toggleFocus(); });
+
+    btnSubmit.addEventListener("click", function(){ submitQuiz(); });
+    btnShowSol.addEventListener("click", function(){
+      if(!SESSION){ return; }
+      revealSolution(true);
+      btnShowSol.disabled = true;
+    });
+    btnNext.addEventListener("click", function(){ nextQuestion(); });
+    btnPrev.addEventListener("click", function(){ prevQuestion(); });
+
+    btnToggleKnown.addEventListener("click", function(){
+      if(!SESSION){ return; }
+      var qid = SESSION.ids[SESSION.idx];
+      toggleKnown(qid);
+      renderQuestion();
+    });
+    btnFlagWrong.addEventListener("click", function(){
+      if(!SESSION){ return; }
+      var qid = SESSION.ids[SESSION.idx];
+      toggleWrong(qid);
+      renderQuestion();
+    });
+
+    btnExport.addEventListener("click", function(){
+      ioBox.value = JSON.stringify(exportPayload(), null, 2);
+    });
+    btnImport.addEventListener("click", function(){
+      var obj = safeJsonParse(ioBox.value);
+      var res = importPayload(obj);
+      ioBox.value = res.ok ? "Import ok." : res.msg;
+    });
+    btnReset.addEventListener("click", function(){
+      resetStats();
+      save();
+      updateHome();
+      ioBox.value = "";
+    });
+
+    btnSumHome.addEventListener("click", function(){ showHome(); });
+    btnSumWrong.addEventListener("click", function(){
+      selMode.value = "quiz";
+      STATE.prefs.mode = "quiz";
+      save();
+      showHome();
+      startSession(true);
+    });
+
+    document.addEventListener("visibilitychange", function(){
+      if(document.hidden){ pauseTimer(); }
+      else{ resumeTimer(); }
+    });
+  }
+
+  function init(){
+    document.title = APP_NAME;
+    document.getElementById("appTitle").textContent = APP_NAME;
+
+    populateCategories();
+    renderLists();
+
+    applyPrefsToUi();
+
+    if(CATS.indexOf(STATE.prefs.cat) >= 0 || STATE.prefs.cat === "ALL"){
+      selCat.value = STATE.prefs.cat;
+    }else{
+      STATE.prefs.cat = "ALL";
+      selCat.value = "ALL";
+      save();
+    }
+
+    updateSettingsInfo();
+    updateHome();
+
+    wireEvents();
+    bindSettings();
+
+    btnHome.disabled = true;
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
