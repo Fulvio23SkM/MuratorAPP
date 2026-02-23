@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#dfefff" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>MuratoriAPP, 1.4.7 </title>
 
   <style>
@@ -1305,6 +1306,92 @@ input[type="range"]{
     rgba(255,255,255,.18) var(--pct),
     rgba(255,255,255,.18) 100%
   );
+}
+	  /* =========================================
+   RESPONSIVE FIX MIRATO (MuratorAPP)
+   Desktop + Samsung A54
+   ========================================= */
+
+/* ---------- Base layout ---------- */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* ---------- MOBILE <= 480px ---------- */
+@media (max-width: 480px){
+
+  .container {
+    max-width: 100%;
+    margin: 0;
+    padding: 16px;
+  }
+
+  .view {
+    width: 100%;
+  }
+
+  /* Hero full width */
+  .hero.glass {
+    width: 100%;
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  /* Bottoni in colonna su telefono */
+  .hero-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+  }
+
+  /* Settings card */
+  .settings-card {
+    width: 100%;
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  /* Righe setting più ariose */
+  .setting-row {
+    gap: 14px;
+  }
+
+  /* Slider più usabili */
+  input[type="range"] {
+    width: 100%;
+    height: 30px;
+  }
+
+  /* Testi un filo più piccoli */
+  h2 {
+    font-size: 18px;
+  }
+
+  /* Evita che la barra sotto Android copra roba */
+  body {
+    padding-bottom: 20px;
+  }
+}
+
+/* ---------- TABLET ---------- */
+@media (min-width: 481px) and (max-width: 900px){
+  .container {
+    max-width: 900px;
+    padding: 20px;
+  }
+}
+
+/* ---------- Desktop ---------- */
+@media (min-width: 901px){
+  .container {
+    max-width: 1100px;
+  }
 }
   </style>
 </head>
